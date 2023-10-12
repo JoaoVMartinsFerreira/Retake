@@ -54,8 +54,8 @@ class _AuthRequestButtonState extends State<AuthRequestButton> {
 
     final body = {
       "type": "auth",
-      "username": "yTekilla",
-      "password": "YrC57qpW",
+      "username": "", //implementar a captação do usuário
+      "password": "", //implementar a captação da senha
       "remember": true,
       "language": "en_US"
     };
