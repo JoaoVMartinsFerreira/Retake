@@ -8,7 +8,7 @@ class GetText {
         String contents = await file.readAsString();
         return 'Conteúdo do arquivo:\n$contents';
       } else {
-        return 'O arquivo não exite.';
+        return 'O arquivo não existe.';
       }
     } catch (e) {
       return 'Erro ao ler o aquivo: $e';
