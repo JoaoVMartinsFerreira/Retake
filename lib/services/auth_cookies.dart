@@ -26,7 +26,7 @@ class AuthCookies {
       );
 
       var cookies = response.headers['set-cookie'];
-      final desiredCookies = extractDesiredCookieValues(cookies.toString());
+      final desiredCookies = _extractDesiredCookieValues(cookies.toString());
 
       if (response.statusCode == 200) {
         return desiredCookies;
@@ -39,7 +39,7 @@ class AuthCookies {
     return 'erro!!!!!';
   }
 
-  String extractDesiredCookieValues(String cookieString) {
+  String _extractDesiredCookieValues(String cookieString) {
     List<String> desiredCookies = [];
 
     RegExp desiredCookiePattern =
