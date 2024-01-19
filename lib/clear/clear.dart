@@ -1,0 +1,4 @@
+class Clear{
+
+  void clear(){}
+}
