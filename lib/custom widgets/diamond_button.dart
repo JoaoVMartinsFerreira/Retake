@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+/**
+ * Widget para o botão em losângo 
+ */
 class DiamondFAB extends StatelessWidget{
   final VoidCallback? onPressed;
   final double size;

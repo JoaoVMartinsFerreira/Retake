@@ -159,7 +159,7 @@ class MenuDrawerState extends State<MenuDrawer> {
               ),
               selected: _selectedIndex == 0,
               onTap: () {
-                getParty.clear();
+                //getParty.clear(); // Aparentemente as informações dos membros da sala não estão sendo duplicadas.
                 globalScreenIndicator = false;
                 _onItemTapped(_selectedIndex);
                 Navigator.pop(context);
