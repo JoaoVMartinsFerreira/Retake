@@ -107,7 +107,7 @@ class MenuDrawer extends StatefulWidget {
 class MenuDrawerState extends State<MenuDrawer> {
   int _selectedIndex = 0;
   final getParty = GetParty();
-  Prices clearPrices = Prices();
+  Prices clearPrices = const Prices();
   final displayIcon = GetParty().getCardDisplayIcon();
   static const TextStyle _menuStyle = TextStyle(
     color: Color.fromARGB(255, 30, 233, 175),
@@ -159,7 +159,8 @@ class MenuDrawerState extends State<MenuDrawer> {
               ),
               selected: _selectedIndex == 0,
               onTap: () {
-                //getParty.clear(); // Aparentemente as informações dos membros da sala não estão sendo duplicadas.
+                getParty.clear(); // Aparentemente as informações dos membros da sala não estão sendo duplicadas.
+                getParty.getPartyAuth();
                 globalScreenIndicator = false;
                 _onItemTapped(_selectedIndex);
                 Navigator.pop(context);
