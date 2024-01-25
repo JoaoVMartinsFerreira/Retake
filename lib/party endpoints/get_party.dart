@@ -10,7 +10,7 @@ Map<dynamic, dynamic> globalResponseMap = {};
 String globalIDCard = '';
 String globalNickName = '';
 List<dynamic> globalMembersUuids = [];
-List<dynamic> globalMembersCardsUuis = [];
+List<dynamic> globalMembersCardsUuids = [];
 List<dynamic> globalMembersNames = [];
 List<String> globalMembersCardsUrls = [];
 
@@ -30,10 +30,8 @@ class GetParty implements Clear {
         getPartyCardInfo(response.body);
         getMemberUuid(response.body);
         getMembersCards(response.body);
-        getMembersNickName();
         setCardsUrls();
-        print(globalMembersCardsUuis);
-        print(globalMembersCardsUrls);
+        await getMembersNickName();
         return response.body;
       } else {
         print(response.body);
@@ -46,7 +44,7 @@ class GetParty implements Clear {
     }
   }
 
-  Future<String> getNickName() async {
+  Future<void> getNickName() async {
     final url = Uri.parse('https://pd.na.a.pvp.net/name-service/v2/players');
 
     final Map<String, String> headers = {
@@ -60,13 +58,10 @@ class GetParty implements Clear {
           headers: headers, body: jsonEncode(nameServiceBody));
       if (response.statusCode == 200) {
         getGameName(response.body);
-        return response.body;
       } else {
-        return 'erro ${response.body}';
       }
     } catch (e) {
       print('Erro $e');
-      return '$e';
     }
   }
 
@@ -81,11 +76,14 @@ class GetParty implements Clear {
   void getGameName(String response) {
     List<dynamic> jsonMap = json.decode(response);
     globalNickName = jsonMap[0]['GameName'];
+    print(jsonMap);
   }
 
   void getMembersGameName(String response) {
     List<dynamic> jsonMap = json.decode(response);
     globalMembersNames.add(jsonMap[0]['GameName']);
+    print('teste');
+    print(jsonMap);
   }
 
   String getCardDisplayIcon() {
@@ -95,7 +93,7 @@ class GetParty implements Clear {
   void getMembersCards(String response) {
     List<dynamic> members = globalResponseMap['Members'];
     for (var member in members) {
-      globalMembersCardsUuis.add(member['PlayerIdentity']['PlayerCardID']);
+      globalMembersCardsUuids.add(member['PlayerIdentity']['PlayerCardID']);
     }
   }
 
@@ -114,35 +112,36 @@ class GetParty implements Clear {
       "Authorization": "Bearer $globalBearerToken",
     };
 
-    List<String> nameServiceBody = [globalPuuid];
+    
+    for (var uuid in globalMembersUuids) {
+      List<String> nameServiceBody = [uuid];  
     try {
       final response = await http.put(url,
           headers: headers, body: jsonEncode(nameServiceBody));
       if (response.statusCode == 200) {
         getMembersGameName(response.body);
       } else {
-        print('erro---------------------------------');
       }
     } catch (e) {
       print(e);
     }
+    }
   }
 
   void setCardsUrls() {
-    for (var uuid in globalMembersCardsUuis) {
+    for (var uuid in globalMembersCardsUuids) {
       globalMembersCardsUrls
           .add('https://media.valorant-api.com/playercards/$uuid/wideart.png');
     }
   }
-
   @override
   void clear() {
-    globalResponseMap = {};
-    globalIDCard = '';
-    globalNickName = '';
-    globalMembersUuids = [];
-    globalMembersCardsUuis = [];
+    globalResponseMap.clear();
+    //globalIDCard = '';
+    //globalNickName = '';
+    globalMembersUuids.clear();
+    globalMembersCardsUuids.clear();
     globalMembersNames = [];
-    globalMembersCardsUrls = [];
+    globalMembersCardsUrls.clear();
   }
 }

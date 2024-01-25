@@ -93,7 +93,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
                           left: 300,
                           child: Text(globalMembersNames[index], 
                           style: const TextStyle(backgroundColor: Color.fromARGB(255,235, 238, 178),
-                          fontFamily: 'TungstenThin'),
+                          fontFamily: 'TungstenBold', fontSize: 20, color: Color.fromARGB(255, 31, 33, 38)),
                           ),
                         ),
                       ],
