@@ -35,9 +35,9 @@ const MainMenu({super.key});
  * Widget com as opções de jogo
  */
 class GameOptions extends StatelessWidget {
-  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   ChangeQueue changeQueue = ChangeQueue();
-  final List<String> options = [
+   List<String> options = [
     'SEM CLASSIFICAÇÃO',
     'COMPETITIVO',
     'FRENÉTICO',
@@ -46,7 +46,7 @@ class GameOptions extends StatelessWidget {
     'DISPARADA',
     'MATA-MATA EM EQUIPE',
   ];
-  final List<String> queueOptions = [
+   List<String> queueOptions = [
     "unrated",
     "competitive",
     "swiftplay",
