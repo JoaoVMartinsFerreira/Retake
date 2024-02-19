@@ -5,7 +5,8 @@ import 'package:retake_app/auth/connector.dart';
 String globalEntitlementToken = '';
 
 class EntitlementsToken with AuthConnector {
-  Future<String> authEntitlements(String token) async {
+  var erro;
+  Future authEntitlements(String token) async {
     final url =
         Uri.parse('https://entitlements.auth.riotgames.com/api/token/v1');
 
@@ -21,15 +22,11 @@ class EntitlementsToken with AuthConnector {
       );
       if (response.statusCode == 200) {
         separateToken(response.body);
-        
-        //print(response.body);
-        return response.body;
       } else {
-        //print('ERRO ENTITLEMENT POST');
-        return 'Erro na solicitação: ${response.statusCode}';
+        erro =  'Erro na solicitação: ${response.statusCode}';
       }
     } catch (e) {
-      return 'Erro: $e';
+      erro = 'Erro: $e';
     }
   }
 // EU SOU MUITO BURRO NÃO SEI DE ONDE TIREI Q TINHA Q FAZER REGEX PRA PEGAR ESSA PORRA

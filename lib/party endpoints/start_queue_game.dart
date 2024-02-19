@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:isolate';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:retake_app/auth/entitlements_token.dart';
@@ -21,6 +22,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
   bool isLoading = false;
   String resultText = '';
   bool queueState = false;
+  bool isAccessible = true;
   GetParty partyInfo = GetParty();
   @override
   void initState() {
@@ -54,7 +56,13 @@ class StartQueueGame extends State<StartQueueGameButton> {
       resultText = leaveResult;
     });
   }
-
+  
+  void changeAccessibility() async {
+    setState(() {
+      isAccessible ? isAccessible = false : isAccessible = true;
+      isAccessible ? setAccessibility('OPEN') : setAccessibility('CLOSED');
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -137,6 +145,9 @@ class StartQueueGame extends State<StartQueueGameButton> {
                 fontSize: 25,
                 color: Color.fromARGB(255, 238, 65, 79),
               ),
+            ),
+            Switch(value: isAccessible, 
+            onChanged: (Isolate) => changeAccessibility(),
             )
         ],
       ),
@@ -188,7 +199,30 @@ class StartQueueGame extends State<StartQueueGameButton> {
       return e.toString();
     }
   }
+ Future<void> setAccessibility(String option) async {
+  final url = Uri.parse(
+        'https://glz-br-1.na.a.pvp.net/parties/v1/parties/$globalPartyId/accessibility');
+  final Map<String, String> headers = {
+      "X-Riot-Entitlements-JWT": globalEntitlementToken,
+      "Authorization": "Bearer $globalBearerToken",
+    };
 
+    final body = {
+      "accessibility": option
+    };
+
+    try {
+    final response = await http.post(url, headers: headers, body: jsonEncode(body));
+    if(response.statusCode == 200){
+      print("certo");
+    }else{
+      print(response.body);
+    }
+    } catch (e) {
+     print(e);
+    }
+    
+ }
   Future<String> preGamePlayer() async {
     final url = Uri.parse(
         'https://glz-br-1.na.a.pvp.net/pregame/v1/matches/$globalPuuid');

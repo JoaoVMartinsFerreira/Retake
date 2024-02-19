@@ -22,6 +22,7 @@ class MultiFactorAuth extends State<MultiFactorAuthButton> {
   String resultText = '';
   bool isLoading = false;
   var snackBar;
+  String result = '';
   late TextEditingController authCodeController;
 
   @override
@@ -36,7 +37,7 @@ class MultiFactorAuth extends State<MultiFactorAuthButton> {
       isLoading = true;
     });
 
-    final result = await mfaAtuh(
+     await mfaAtuh(
       authCodeController.text,
     );
 
@@ -51,7 +52,8 @@ class MultiFactorAuth extends State<MultiFactorAuthButton> {
     } else {
       snackBar = const SnackBar(
           content: Text(
-              'Erro na autenticação! \n Verifique seo código está correto conexão com a internet'));
+              'Erro na autenticação! \n Verifique seo código está correto conexão com a internet. ')
+              );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
@@ -120,7 +122,7 @@ class MultiFactorAuth extends State<MultiFactorAuthButton> {
     );
   }
 
-  Future<String> mfaAtuh(String code) async {
+  Future mfaAtuh(String code) async {
     final url = Uri.parse('https://auth.riotgames.com/api/v1/authorization');
     final authRequest = AuthRequest();
     final entitlements = EntitlementsToken();
@@ -150,13 +152,11 @@ class MultiFactorAuth extends State<MultiFactorAuthButton> {
             globalPuuid, globalBearerToken, entitlements.getToken());
         await getParty.getPartyAuth();
         await getParty.getNickName();
-        //await friends.getFriends();
-        return 'Auententicação feita com sucesso';
       } else {
-        return ' Houve algum erro na atutenticação \n ${response.statusCode}';
+        result =  ' Houve algum erro na atutenticação \n ${response.statusCode}';
       }
     } catch (e) {
-      return 'Houve algum erro, tente novamente \n $e';
+      result =  'Houve algum erro, tente novamente \n $e';
     }
   }
 
