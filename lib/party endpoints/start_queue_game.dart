@@ -77,8 +77,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
       builder: (BuildContext context) {
         String playerName = '';
 
-        return AlertDialog(
-          
+        return AlertDialog(          
           title: const Text('CONVIDAR', style:TextStyle(fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
           content: TextField(
             onChanged: (value){
