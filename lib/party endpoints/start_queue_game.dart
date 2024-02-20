@@ -1,15 +1,16 @@
 import 'dart:convert';
-import 'dart:isolate';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:retake_app/auth/entitlements_token.dart';
 import 'package:retake_app/auth/multi_factor_authentication.dart';
 import 'package:retake_app/auth/player_info.dart';
 import 'package:retake_app/custom%20widgets/diamond_button.dart';
+import 'package:retake_app/desktop/gettext/get_text.dart';
 import 'package:retake_app/party%20endpoints/get_party.dart';
 import 'package:retake_app/party%20endpoints/get_party_player.dart';
 
 String globalMatchId = '';
+
 
 class StartQueueGameButton extends StatefulWidget {
   const StartQueueGameButton({Key? key}) : super(key: key);
@@ -23,10 +24,12 @@ class StartQueueGame extends State<StartQueueGameButton> {
   String resultText = '';
   bool queueState = false;
   bool isAccessible = true;
+  int numPlayers = 0;
   GetParty partyInfo = GetParty();
   @override
   void initState() {
     super.initState();
+    numPlayers = globalMembersUuids.length;
   }
 
   void onPressed() async {
@@ -63,6 +66,37 @@ class StartQueueGame extends State<StartQueueGameButton> {
       isAccessible ? setAccessibility('OPEN') : setAccessibility('CLOSED');
     });
   }
+  void addPlayer(){
+    setState(() {
+      numPlayers++;
+    });
+  }
+  void showAddPlayerDiaglog(){
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String playerName = '';
+
+        return AlertDialog(
+          
+          title: const Text('CONVIDAR', style:TextStyle(fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
+          content: TextField(
+            onChanged: (value){
+              playerName = value;
+            },
+            decoration: const InputDecoration(hintText: 'BUSCAR', hintStyle: TextStyle(fontWeight: FontWeight.bold),),
+          ),
+          actions: [
+            TextButton(onPressed: (){
+              invitePlater(playerName);
+              Navigator.of(context).pop();
+            }, child: const Text('CONVIDAR')),
+            TextButton(onPressed: Navigator.of(context).pop, child: const Text('CANCELAR'),)
+          ],
+        );
+      }
+      );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,7 +116,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
           Expanded(
             child: ListView.builder(
               scrollDirection: Axis.vertical,
-              itemCount: globalMembersCardsUrls.length,
+              itemCount: globalMembersUuids.length,
               itemBuilder: (context, index) {
                 return Container(
                   width: 200,
@@ -147,8 +181,10 @@ class StartQueueGame extends State<StartQueueGameButton> {
               ),
             ),
             Switch(value: isAccessible, 
-            onChanged: (Isolate) => changeAccessibility(),
-            )
+            onChanged: (value) => changeAccessibility(),
+            ),
+            ElevatedButton(onPressed: showAddPlayerDiaglog, 
+            child: Text("ADICIONAR JOGADOR"))
         ],
       ),
     ),
@@ -258,7 +294,6 @@ class StartQueueGame extends State<StartQueueGameButton> {
     print(globalMatchId);
     return result;
   }
-
   Future<String> preGameQuit() async {
     final url = Uri.parse(
         'https://glz-br-1.na.a.pvp.net/pregame/v1/matches/$globalMatchId');
@@ -283,5 +318,30 @@ class StartQueueGame extends State<StartQueueGameButton> {
       print(e);
       return 'erro ao fazer a reuisição';
     }
+  }
+  Future<bool> invitePlater(String name) async{
+    final url = Uri.parse('https://glz-br-1.na.a.pvp.net/parties/v1/parties/$globalPartyId/invites/name/$name/tag/BR1');
+    final Map<String,String> headers = {
+      "X-Riot-ClientVersion": globalVersion,
+      "X-Riot-Entitlements-JWT": globalEntitlementToken,
+      "Authorization": "Bearer $globalBearerToken",
+    };
+
+    try {
+      final response = await http.post(url, headers: headers);
+      if(response.statusCode == 200){
+        print("certo");
+        return true;
+      }
+      else{
+        print(response.statusCode);
+        print(response.headers);
+        return false;
+      }
+    } catch (e) {
+      print(e);
+      return false;
+    }
+
   }
 }

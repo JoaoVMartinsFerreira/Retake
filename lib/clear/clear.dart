@@ -1,4 +1,3 @@
 class Clear{
-
   void clear(){}
 }
