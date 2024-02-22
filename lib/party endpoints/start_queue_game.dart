@@ -183,7 +183,12 @@ class StartQueueGame extends State<StartQueueGameButton> {
             onChanged: (value) => changeAccessibility(),
             ),
             ElevatedButton(onPressed: showAddPlayerDiaglog, 
-            child: Text("ADICIONAR JOGADOR"))
+            style: ElevatedButton.styleFrom(
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.zero,
+              )
+            ),
+            child: const Text("CONVIDAR"))
         ],
       ),
     ),
