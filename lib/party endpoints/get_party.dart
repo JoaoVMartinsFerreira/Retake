@@ -13,7 +13,7 @@ List<dynamic> globalMembersUuids = [];
 List<dynamic> globalMembersCardsUuids = [];
 List<dynamic> globalMembersNames = [];
 List<String> globalMembersCardsUrls = [];
-
+List<String> globalMembersTitles = [];
 class GetParty implements Clear {
   Future<String> getPartyAuth() async {
     final url = Uri.parse(
@@ -31,6 +31,7 @@ class GetParty implements Clear {
         getMemberUuid(response.body);
         getMembersCards(response.body);
         setCardsUrls();
+        //getMembersTitles(response.body);
         await getMembersNickName();
         return response.body;
       } else {
@@ -103,7 +104,14 @@ class GetParty implements Clear {
       globalMembersUuids.add(member['PlayerIdentity']['Subject']);
     }
   }
-
+  void getMembersTitles(String response){
+    List<dynamic> members = globalResponseMap['Members'];
+    for(var member in members){
+      globalMembersTitles.add(member['PlayerIdentity']['PlayerTitleID']);
+    }
+    print('TITLES');
+    print(globalMembersTitles);
+  }
   Future<void> getMembersNickName() async {
     final url = Uri.parse('https://pd.na.a.pvp.net/name-service/v2/players');
 
@@ -137,8 +145,8 @@ class GetParty implements Clear {
   @override
   void clear() {
     globalResponseMap.clear();
-    //globalIDCard = '';
-    //globalNickName = '';
+    globalIDCard = '';
+    globalNickName = '';
     globalMembersUuids.clear();
     globalMembersCardsUuids.clear();
     globalMembersNames = [];

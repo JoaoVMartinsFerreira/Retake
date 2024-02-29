@@ -7,7 +7,6 @@ import 'package:retake_app/auth/no_multifactor.dart';
 import 'package:retake_app/custom%20widgets/footer_menu_bar.dart';
 import 'package:retake_app/auth/multi_factor_authentication.dart';
 
-
 String globalCookies = '';
 String globalDirectBearerToken = '';
 NoMultifacfor nomfa = NoMultifacfor();
@@ -71,7 +70,7 @@ Widget build(BuildContext context) {
       decoration:  const BoxDecoration(
         image: DecorationImage(
           image: AssetImage('assets/images/desktop_background.jpg'),
-          fit: BoxFit.cover, // Ou outro ajuste adequado para a sua situação
+          fit: BoxFit.cover,
         ),
       ),
       
@@ -140,21 +139,22 @@ Widget build(BuildContext context) {
     final cookies = await authCookies.cookiesAuth();
     final url = Uri.parse('https://auth.riotgames.com/api/v1/authorization');
 
-
-    final Map<String, String> headers = {
+     final Map<String,String> headers = {     
       "cookie": cookies,
       "Content-Type": "application/json",
-      "Set-Cookie": "SameSite=None"
-    };
+      //"Set-Cookie": "SameSite=None"
+
+  }; 
     globalCookies = cookies;
     final body = {
       "type": "auth",
       "username": userName,
       "password": password,
-      "remember": true,
+      "remember": false,
       "language": "en_US",
     };
 
+   
     try {
       final response = await http.put(
         Uri.parse(url.toString()),
@@ -167,10 +167,12 @@ Widget build(BuildContext context) {
         if(verifyResponse(response.body) == "direct_access"){
           globalDirectBearerToken = separateBearerToken(response.body);
           result =  'Sucesso \n ${response.body}';
+          
         }
       }
        else {
         result = '${response.statusCode} \n ${response.body}';
+        print(result);
       }
     } catch (e) {
       result = e.toString();
