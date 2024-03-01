@@ -23,7 +23,6 @@ class GetParty implements Clear {
       "X-Riot-Entitlements-JWT": globalEntitlementToken,
       "Authorization": "Bearer $globalBearerToken",
     };
-
     try {
       final response = await http.get(url, headers: headers);
       if (response.statusCode == 200) {
