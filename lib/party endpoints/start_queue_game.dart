@@ -73,6 +73,11 @@ class StartQueueGame extends State<StartQueueGameButton> {
       numPlayers++;
     });
   }
+  void removePlayer(){
+    setState(() {
+      
+    });
+  }
   void showAddPlayerDiaglog(){
     showDialog(
       context: context,
@@ -129,23 +134,28 @@ class StartQueueGame extends State<StartQueueGameButton> {
                   width: 200,
                   height: 100,
                   padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  child: Card(
-                    margin: const EdgeInsets.all(8.0),
-                    color: Colors.transparent,
-                    child: Stack(
-                      children: [
-                        Positioned.directional(
-                          textDirection: TextDirection.ltr,
-                          child: Image.network(globalMembersCardsUrls[index]),
-                        ),
-                        Positioned.fill(
-                          left: 300,
-                          child: Text(globalMembersNames[index], 
-                          style: const TextStyle(backgroundColor: Color.fromARGB(255,235, 238, 178),
-                          fontFamily: 'TungstenBold', fontSize: 20, color: Color.fromARGB(255, 31, 33, 38)),
+                  child: GestureDetector(
+                    onTap: () => {
+                       removePlater(globalMembersUuids[index])
+                    },
+                    child: Card(
+                      margin: const EdgeInsets.all(8.0),
+                      color: Colors.transparent,
+                      child: Stack(
+                        children: [
+                          Positioned.directional(
+                            textDirection: TextDirection.ltr,
+                            child: Image.network(globalMembersCardsUrls[index]),
                           ),
-                        ),
-                      ],
+                          Positioned.fill(
+                            left: 300,
+                            child: Text(globalMembersNames[index], 
+                            style: const TextStyle(backgroundColor: Color.fromARGB(255,235, 238, 178),
+                            fontFamily: 'TungstenBold', fontSize: 20, color: Color.fromARGB(255, 31, 33, 38)),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -223,6 +233,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
         return 'Houve algum problema';
       }
     } catch (e) {
+      Exception(e);
       return e.toString();
     }
   }
@@ -248,6 +259,20 @@ class StartQueueGame extends State<StartQueueGameButton> {
       return e.toString();
     }
   }
+  Future<void> removePlater(String puuid) async{
+    final url = Uri.parse('https://glz-br-1.na.a.pvp.net/parties/v1/players/$puuid');
+
+    final Map<String,String> headers = {
+      "X-Riot-Entitlements-JWT": globalEntitlementToken,
+      "Authorization": "Bearer $globalBearerToken",
+    };
+    try {
+      final response = await http.delete(url,headers: headers);
+    } catch (e) {
+      Exception(e);
+    }
+  }
+
  Future<void> _setAccessibility(String option) async {
   final url = Uri.parse(
         'https://glz-br-1.na.a.pvp.net/parties/v1/parties/$globalPartyId/accessibility');
@@ -321,6 +346,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
   //     return 'erro ao fazer a reuisição';
   //   }
   // }
+
   Future<bool> _invitePlater(String name) async{
     final url = Uri.parse('https://glz-br-1.na.a.pvp.net/parties/v1/parties/$globalPartyId/invites/name/$name/tag/BR1');
     final Map<String,String> headers = {
