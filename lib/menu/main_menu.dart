@@ -22,7 +22,7 @@ const MainMenu({super.key});
       routes: {
         '/': (context) =>
             GameOptions(), //globalPuuid == "" ? AuthRequestButton() :
-        '/queueGame': (context) => const StartQueueGameButton(),
+        '/queueGame': (context) =>  StartQueueGameButton(),
         '/teste': (context) => const MultiFactorAuthButton(),
       },
     );
@@ -158,9 +158,9 @@ class MenuDrawerState extends State<MenuDrawer> {
                 style: _menuStyle,
               ),
               selected: _selectedIndex == 0,
-              onTap: () {
+              onTap: () async {
                 getParty.clear(); // Aparentemente as informações dos membros da sala não estão sendo duplicadas.
-                getParty.getPartyAuth();
+                await getParty.getPartyAuth();
                 globalScreenIndicator = false;
                 _onItemTapped(_selectedIndex);
                 Navigator.pop(context);

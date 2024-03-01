@@ -7,7 +7,6 @@ import 'package:retake_app/auth/no_multifactor.dart';
 import 'package:retake_app/custom%20widgets/footer_menu_bar.dart';
 import 'package:retake_app/auth/multi_factor_authentication.dart';
 
-
 String globalCookies = '';
 String globalDirectBearerToken = '';
 NoMultifacfor nomfa = NoMultifacfor();
@@ -22,6 +21,7 @@ class AuthRequest extends State<AuthRequestButton> {
   String resultText = '';
   bool isLoading = false;
   var snackBar;
+  String result = '';
   late TextEditingController usernameController;
   late TextEditingController passwordController;
 
@@ -39,7 +39,7 @@ class AuthRequest extends State<AuthRequestButton> {
       isLoading = true;
     });
 
-    final result = await auth(
+    await auth(
       usernameController.text,
       passwordController.text,
     );
@@ -56,7 +56,7 @@ class AuthRequest extends State<AuthRequestButton> {
       nomfa.noMfa();
       navigator.pushReplacement(MaterialPageRoute(builder: (context) => const FooterMenuBar()));
     }else{
-      snackBar = const SnackBar(content: Text('Erro no login! \n Verifique seus dados ou sua conexão com a internet'));
+      snackBar = const SnackBar(content: Text('Erro no login! \n Verifique seus dados, sua conexão com a internet ou a disponibilidade dos servidores.'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
     
@@ -67,10 +67,10 @@ Widget build(BuildContext context) {
   return Scaffold(
     body: Container(
       alignment: Alignment.centerLeft,
-      decoration:  BoxDecoration(
+      decoration:  const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage(checkDevice()),
-          fit: BoxFit.cover, // Ou outro ajuste adequado para a sua situação
+          image: AssetImage('assets/images/desktop_background.jpg'),
+          fit: BoxFit.cover,
         ),
       ),
       
@@ -80,7 +80,7 @@ Widget build(BuildContext context) {
           Container(
             height: 50,
             width: 450,
-            padding: EdgeInsets.only(left: 20, right: 20),
+            padding: const EdgeInsets.only(left: 20, right: 20),
             child: TextField(
               controller: usernameController,
               style: const TextStyle(color: Colors.white),
@@ -97,7 +97,7 @@ Widget build(BuildContext context) {
           Container(
                height: 50,
             width: 450,
-            padding: EdgeInsets.only(left: 20, right: 20),
+            padding: const EdgeInsets.only(left: 20, right: 20),
             child: TextField(
               controller: passwordController,
               style: const TextStyle(color: Colors.white),
@@ -134,25 +134,27 @@ Widget build(BuildContext context) {
   );
 }
 
-  Future<String> auth(String userName, String password) async {
+  Future auth(String userName, String password) async {
     final authCookies = AuthCookies();
     final cookies = await authCookies.cookiesAuth();
     final url = Uri.parse('https://auth.riotgames.com/api/v1/authorization');
 
-
-    final Map<String, String> headers = {
+     final Map<String,String> headers = {     
       "cookie": cookies,
       "Content-Type": "application/json",
-    };
+      //"Set-Cookie": "SameSite=None"
+
+  }; 
     globalCookies = cookies;
     final body = {
       "type": "auth",
       "username": userName,
       "password": password,
-      "remember": true,
-      "language": "pt_BR",
+      "remember": false,
+      "language": "en_US",
     };
 
+   
     try {
       final response = await http.put(
         Uri.parse(url.toString()),
@@ -164,16 +166,18 @@ Widget build(BuildContext context) {
       if (response.statusCode == 200) {
         if(verifyResponse(response.body) == "direct_access"){
           globalDirectBearerToken = separateBearerToken(response.body);
+          result =  'Sucesso \n ${response.body}';
+          
         }
-        return 'Sucesso  \n ${response.body}';
       }
        else {
-        return '${response.statusCode} \n ${response.body}';
+        result = '${response.statusCode} \n ${response.body}';
+        print(result);
       }
     } catch (e) {
-      return '$e';
-    }
+      result = e.toString();
   }
+}
 
   String verifyResponse(String response) {
 

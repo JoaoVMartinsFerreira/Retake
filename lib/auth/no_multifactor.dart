@@ -11,7 +11,7 @@ final authRequest = AuthRequest();
   /***
    * Método usando quando a conta não requer verificaçãode duas etapas
    */
-   Future<void> noMfa() async{
+   Future noMfa() async{
      final entitlements = EntitlementsToken();
     final playerInfo = PlayerInfo();
     final getText = GetText();

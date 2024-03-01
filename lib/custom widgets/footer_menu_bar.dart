@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:retake_app/auth/auth_request.dart';
-import 'package:retake_app/auth/multi_factor_authentication.dart';
 import 'package:retake_app/menu/main_menu.dart';
 import 'package:retake_app/store%20endpoints/prices.dart';
-
-import '../party endpoints/get_party.dart';
-
 
 class FooterMenuBar extends StatefulWidget{
   const FooterMenuBar({super.key});
