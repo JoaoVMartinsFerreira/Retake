@@ -30,7 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^1.1.0
+  http: ^1.2.1
+  dio: ^5.4.1
   process_run: ^0.13.1
   web_socket_channel: ^2.4.0
   flutter_launcher_icons: ^0.13.1
