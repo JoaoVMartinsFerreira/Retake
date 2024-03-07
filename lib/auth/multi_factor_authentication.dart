@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:retake_app/auth/auth_request.dart';
 import 'dart:convert';
@@ -93,19 +94,23 @@ class MultiFactorAuth extends State<MultiFactorAuthButton> {
               const SizedBox(
                 height: 20,
               ),
-              ElevatedButton(
-                onPressed: isLoading ? null : onPressed,
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 31, 33, 38),
-                    foregroundColor: const Color.fromARGB(255, 255, 255, 255),
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.zero,
-                    )),
-                child: const Text('DOIS FATORES',
-                    style: TextStyle(
-                      fontFamily: 'TungstenBold',
-                      fontSize: 20,
-                    )),
+              SizedBox(
+                width: 150,
+                height: 40,
+                child: ElevatedButton(
+                  onPressed: isLoading ? null : onPressed,
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 31, 33, 38),
+                      foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      )),
+                  child: const Text('DOIS FATORES',
+                      style: TextStyle(
+                        fontFamily: 'TungstenBold',
+                        fontSize: 20,
+                      )),
+                ),
               ),
               const SizedBox(height: 16),
               if (isLoading)

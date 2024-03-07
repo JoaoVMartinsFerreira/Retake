@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:retake_app/auth/auth_cookies.dart';
 import 'package:retake_app/auth/no_multifactor.dart';
@@ -116,19 +117,23 @@ Widget build(BuildContext context) {
             ),
           ),
           const SizedBox(height: 20,),
-          ElevatedButton(
-            onPressed: isLoading ? null : onPressed,
-            style: ElevatedButton.styleFrom(
-               backgroundColor: const Color.fromARGB(255, 31, 33, 38), 
-              foregroundColor: const Color.fromARGB(255, 255, 255, 255),
-              shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.zero,
-                )
-                
+          SizedBox(
+            width: 150,
+            height: 40,
+            child: ElevatedButton(
+              onPressed: isLoading ? null : onPressed,
+              style: ElevatedButton.styleFrom(
+                 backgroundColor: const Color.fromARGB(255, 31, 33, 38), 
+                foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  )
+                  
+              ),
+              child: const Text('LOGAR', style: TextStyle(fontFamily: 'TungstenBold', fontSize: 20),
+              ),
+              
             ),
-            child: const Text('LOGAR', style: TextStyle(fontFamily: 'TungstenBold', fontSize: 20),
-            ),
-            
           ),
           const SizedBox(height: 16),
           if (isLoading) const CircularProgressIndicator() else const Text(''),
