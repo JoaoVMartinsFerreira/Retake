@@ -130,6 +130,17 @@ void checkAccessibility(){
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+           Padding(
+            padding: EdgeInsets.only(left: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Switch(value: isAccessible, 
+                  onChanged: (value) => changeAccessibility(),
+                  ),
+              ],
+            ),
+          ),        
           Expanded(
             child: ListView.builder(
               scrollDirection: Axis.vertical,
@@ -197,10 +208,6 @@ void checkAccessibility(){
                 fontSize: 25,
                 color: Color.fromARGB(255, 238, 65, 79),
               ),
-            ),
-            Switch(
-              value: isAccessible, 
-            onChanged: (value) => changeAccessibility(),
             ),
             ElevatedButton(onPressed: showAddPlayerDiaglog, 
             style: ElevatedButton.styleFrom(
