@@ -136,8 +136,6 @@ void checkAccessibility(){
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-           Padding(
-        children: [  
           Padding(
 
             padding: EdgeInsets.only(left: 16.0),
@@ -224,7 +222,6 @@ void checkAccessibility(){
               ),
             ),
 
-              )
             SizedBox(
               child: ElevatedButton(onPressed: showAddPlayerDiaglog, 
               style: ElevatedButton.styleFrom(
