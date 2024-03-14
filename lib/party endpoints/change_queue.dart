@@ -15,7 +15,6 @@ class ChangeQueue {
    */
 
   Future<void> changeQueue(String queueId) async {
-
     final url = Uri.parse('https://glz-br-1.na.a.pvp.net/parties/v1/parties/$globalPartyId/queue');
 
     final Map<String, String> headers = {

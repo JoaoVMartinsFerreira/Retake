@@ -1,11 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:retake_app/auth/auth_cookies.dart';
 import 'package:retake_app/auth/no_multifactor.dart';
 import 'package:retake_app/custom%20widgets/footer_menu_bar.dart';
 import 'package:retake_app/auth/multi_factor_authentication.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 String globalCookies = '';
 String globalDirectBearerToken = '';
@@ -37,6 +40,7 @@ class AuthRequest extends State<AuthRequestButton> {
     setState(() {
       FocusManager.instance.primaryFocus?.unfocus();
       isLoading = true;
+      TextInput.finishAutofillContext();
     });
 
     await auth(
@@ -81,15 +85,18 @@ Widget build(BuildContext context) {
             height: 50,
             width: 450,
             padding: const EdgeInsets.only(left: 20, right: 20),
-            child: TextField(
-              controller: usernameController,
-              style: const TextStyle(color: Colors.white),
-              textAlign: TextAlign.justify,
-              decoration: const InputDecoration(
-              hintText: 'Nome de Usuário', 
-              hintStyle: TextStyle(color: Colors.white),
-              border: OutlineInputBorder(),
-              
+            child: AutofillGroup(
+              child: TextField(
+                autofillHints: [AutofillHints.username],
+                controller: usernameController,
+                style: const TextStyle(color: Colors.white),
+                textAlign: TextAlign.justify,
+                decoration: const InputDecoration(
+                hintText: 'Nome de Usuário', 
+                hintStyle: TextStyle(color: Colors.white),
+                border: OutlineInputBorder(),
+                
+                ),
               ),
             ),
           ),
@@ -110,19 +117,23 @@ Widget build(BuildContext context) {
             ),
           ),
           const SizedBox(height: 20,),
-          ElevatedButton(
-            onPressed: isLoading ? null : onPressed,
-            style: ElevatedButton.styleFrom(
-               backgroundColor: const Color.fromARGB(255, 31, 33, 38), 
-              foregroundColor: const Color.fromARGB(255, 255, 255, 255),
-              shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.zero,
-                )
-                
+          SizedBox(
+            width: 150,
+            height: 40,
+            child: ElevatedButton(
+              onPressed: isLoading ? null : onPressed,
+              style: ElevatedButton.styleFrom(
+                 backgroundColor: const Color.fromARGB(255, 31, 33, 38), 
+                foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  )
+                  
+              ),
+              child: const Text('LOGAR', style: TextStyle(fontFamily: 'TungstenBold', fontSize: 20),
+              ),
+              
             ),
-            child: const Text('LOGAR', style: TextStyle(fontFamily: 'TungstenBold', fontSize: 20),
-            ),
-            
           ),
           const SizedBox(height: 16),
           if (isLoading) const CircularProgressIndicator() else const Text(''),
@@ -135,6 +146,7 @@ Widget build(BuildContext context) {
 }
 
   Future auth(String userName, String password) async {
+    final storage = new FlutterSecureStorage();
     final authCookies = AuthCookies();
     final cookies = await authCookies.cookiesAuth();
     final url = Uri.parse('https://auth.riotgames.com/api/v1/authorization');
@@ -166,8 +178,8 @@ Widget build(BuildContext context) {
       if (response.statusCode == 200) {
         if(verifyResponse(response.body) == "direct_access"){
           globalDirectBearerToken = separateBearerToken(response.body);
+          await storage.write(key: 'userName', value: userName);
           result =  'Sucesso \n ${response.body}';
-          
         }
       }
        else {

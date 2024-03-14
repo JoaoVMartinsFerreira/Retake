@@ -31,9 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^1.2.1
-  dio: ^5.4.1
-  process_run: ^0.13.1
-  web_socket_channel: ^2.4.0
+  flutter_secure_storage: ^9.0.0
   flutter_launcher_icons: ^0.13.1
 flutter_launcher_icons:
   android: "launcher_icon"
@@ -72,7 +70,7 @@ flutter:
   assets:
   - assets/images/
   - assets/fonts/
-
+  
   fonts:
     - family: TungstenBold
       fonts:

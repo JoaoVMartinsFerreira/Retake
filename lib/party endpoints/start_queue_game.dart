@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:retake_app/auth/entitlements_token.dart';
 import 'package:retake_app/auth/multi_factor_authentication.dart';
@@ -83,6 +84,11 @@ void checkAccessibility(){
       numPlayers++;
     });
   }
+  void removePlayer(){
+    setState(() {
+      
+    });
+  }
   void showAddPlayerDiaglog(){
     showDialog(
       context: context,
@@ -131,6 +137,9 @@ void checkAccessibility(){
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
            Padding(
+        children: [  
+          Padding(
+
             padding: EdgeInsets.only(left: 16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -150,23 +159,28 @@ void checkAccessibility(){
                   width: 200,
                   height: 100,
                   padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  child: Card(
-                    margin: const EdgeInsets.all(8.0),
-                    color: Colors.transparent,
-                    child: Stack(
-                      children: [
-                        Positioned.directional(
-                          textDirection: TextDirection.ltr,
-                          child: Image.network(globalMembersCardsUrls[index]),
-                        ),
-                        Positioned.fill(
-                          left: 300,
-                          child: Text(globalMembersNames[index], 
-                          style: const TextStyle(backgroundColor: Color.fromARGB(255,235, 238, 178),
-                          fontFamily: 'TungstenBold', fontSize: 20, color: Color.fromARGB(255, 31, 33, 38)),
+                  child: GestureDetector(
+                    onTap: () => {
+                       removePlater(globalMembersUuids[index])
+                    },
+                    child: Card(
+                      margin: const EdgeInsets.all(8.0),
+                      color: Colors.transparent,
+                      child: Stack(
+                        children: [
+                          Positioned.directional(
+                            textDirection: TextDirection.ltr,
+                            child: Image.network(globalMembersCardsUrls[index]),
                           ),
-                        ),
-                      ],
+                          Positioned.fill(
+                            left: 300,
+                            child: Text(globalMembersNames[index], 
+                            style: const TextStyle(backgroundColor: Color.fromARGB(255,235, 238, 178),
+                            fontFamily: 'TungstenBold', fontSize: 20, color: Color.fromARGB(255, 31, 33, 38)),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -180,8 +194,8 @@ void checkAccessibility(){
               backgroundColor: const Color.fromARGB(255, 238, 65, 79),
               foregroundColor: const Color.fromARGB(255, 255, 255, 255),
               fixedSize: const Size(200, 60),
-              shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.zero, 
+              shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5), 
               ),
             ),
             child: const Text(
@@ -209,13 +223,18 @@ void checkAccessibility(){
                 color: Color.fromARGB(255, 238, 65, 79),
               ),
             ),
-            ElevatedButton(onPressed: showAddPlayerDiaglog, 
-            style: ElevatedButton.styleFrom(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.zero,
+
               )
+            SizedBox(
+              child: ElevatedButton(onPressed: showAddPlayerDiaglog, 
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                )
+              ),
+              child: const Text("CONVIDAR")),
             ),
-            child: const Text("CONVIDAR"))
+            const SizedBox(height: 15,)
         ],
       ),
     ),
@@ -241,6 +260,7 @@ void checkAccessibility(){
         return 'Houve algum problema';
       }
     } catch (e) {
+      Exception(e);
       return e.toString();
     }
   }
@@ -266,6 +286,20 @@ void checkAccessibility(){
       return e.toString();
     }
   }
+  Future<void> removePlater(String puuid) async{
+    final url = Uri.parse('https://glz-br-1.na.a.pvp.net/parties/v1/players/$puuid');
+
+    final Map<String,String> headers = {
+      "X-Riot-Entitlements-JWT": globalEntitlementToken,
+      "Authorization": "Bearer $globalBearerToken",
+    };
+    try {
+      final response = await http.delete(url,headers: headers);
+    } catch (e) {
+      Exception(e);
+    }
+  }
+
  Future<void> _setAccessibility(String option) async {
   final url = Uri.parse(
         'https://glz-br-1.na.a.pvp.net/parties/v1/parties/$globalPartyId/accessibility');
@@ -339,6 +373,7 @@ void checkAccessibility(){
   //     return 'erro ao fazer a reuisição';
   //   }
   // }
+
   Future<bool> _invitePlater(String name) async{
     final url = Uri.parse('https://glz-br-1.na.a.pvp.net/parties/v1/parties/$globalPartyId/invites/name/$name/tag/BR1');
     final Map<String,String> headers = {
