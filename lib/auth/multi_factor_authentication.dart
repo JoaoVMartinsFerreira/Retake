@@ -150,7 +150,7 @@ class MultiFactorAuth extends State<MultiFactorAuthButton> {
         await entitlements.authEntitlements(getBearerToken());
         await getPartyPlayer.getPartyPlayer(
             globalPuuid, globalBearerToken, entitlements.getToken());
-        await getParty.getPartyAuth();
+        await getParty.getParty();
         await getParty.getNickName();
       } else {
         result =  ' Houve algum erro na atutenticação \n ${response.statusCode}';

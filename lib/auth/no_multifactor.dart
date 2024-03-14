@@ -24,7 +24,7 @@ final authRequest = AuthRequest();
         await playerInfo.getPlayerInfo(getBearerToken());
         await entitlements.authEntitlements(getBearerToken());
         await getPartyPlayer.getPartyPlayer(globalPuuid, globalBearerToken, entitlements.getToken());
-        await getParty.getPartyAuth();
+        await getParty.getParty();
         await getParty.getNickName();
     } catch (e) {
       print(e);

@@ -160,7 +160,7 @@ class MenuDrawerState extends State<MenuDrawer> {
               selected: _selectedIndex == 0,
               onTap: () async {
                 getParty.clear(); // Aparentemente as informações dos membros da sala não estão sendo duplicadas.
-                await getParty.getPartyAuth();
+                await getParty.getParty();
                 globalScreenIndicator = false;
                 _onItemTapped(_selectedIndex);
                 Navigator.pop(context);
