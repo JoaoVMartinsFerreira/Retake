@@ -76,7 +76,6 @@ class GetParty implements Clear {
   void getGameName(String response) {
     List<dynamic> jsonMap = json.decode(response);
     globalNickName = jsonMap[0]['GameName'];
-    print(jsonMap);
   }
 
   void getMembersGameName(String response) {

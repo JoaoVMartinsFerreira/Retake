@@ -103,7 +103,7 @@ class MultiFactorAuth extends State<MultiFactorAuthButton> {
                       backgroundColor: const Color.fromARGB(255, 31, 33, 38),
                       foregroundColor: const Color.fromARGB(255, 255, 255, 255),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
+                        borderRadius: BorderRadius.circular(5),
                       )),
                   child: const Text('DOIS FATORES',
                       style: TextStyle(

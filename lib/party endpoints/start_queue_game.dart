@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:retake_app/auth/entitlements_token.dart';
 import 'package:retake_app/auth/multi_factor_authentication.dart';
@@ -124,7 +125,18 @@ class StartQueueGame extends State<StartQueueGameButton> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
+        children: [  
+          Padding(
+            padding: EdgeInsets.only(left: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Switch(value: isAccessible, 
+                  onChanged: (value) => changeAccessibility(),
+                  ),
+              ],
+            ),
+          ),        
           Expanded(
             child: ListView.builder(
               scrollDirection: Axis.vertical,
@@ -169,8 +181,8 @@ class StartQueueGame extends State<StartQueueGameButton> {
               backgroundColor: const Color.fromARGB(255, 238, 65, 79),
               foregroundColor: const Color.fromARGB(255, 255, 255, 255),
               fixedSize: const Size(200, 60),
-              shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.zero, 
+              shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5), 
               ),
             ),
             child: const Text(
@@ -198,16 +210,17 @@ class StartQueueGame extends State<StartQueueGameButton> {
                 color: Color.fromARGB(255, 238, 65, 79),
               ),
             ),
-            Switch(value: isAccessible, 
-            onChanged: (value) => changeAccessibility(),
+          
+            SizedBox(
+              child: ElevatedButton(onPressed: showAddPlayerDiaglog, 
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                )
+              ),
+              child: const Text("CONVIDAR")),
             ),
-            ElevatedButton(onPressed: showAddPlayerDiaglog, 
-            style: ElevatedButton.styleFrom(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.zero,
-              )
-            ),
-            child: const Text("CONVIDAR"))
+            const SizedBox(height: 15,)
         ],
       ),
     ),
