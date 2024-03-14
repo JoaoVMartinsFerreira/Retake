@@ -15,7 +15,7 @@ List<dynamic> globalMembersNames = [];
 List<String> globalMembersCardsUrls = [];
 List<String> globalMembersTitles = [];
 class GetParty implements Clear {
-  Future<String> getPartyAuth() async {
+  Future<String> getParty() async {
     final url = Uri.parse(
         'https://glz-br-1.na.a.pvp.net/parties/v1/parties/$globalPartyId');
 
@@ -30,6 +30,7 @@ class GetParty implements Clear {
         getMemberUuid(response.body);
         getMembersCards(response.body);
         setCardsUrls();
+        //getAccessibility();
         //getMembersTitles(response.body);
         await getMembersNickName();
         return response.body;
@@ -43,7 +44,26 @@ class GetParty implements Clear {
       return '$e';
     }
   }
+  Future<String> getAccessibility() async{
+        final url = Uri.parse(
+        'https://glz-br-1.na.a.pvp.net/parties/v1/parties/$globalPartyId');
 
+    final Map<String, String> headers = {
+      "X-Riot-Entitlements-JWT": globalEntitlementToken,
+      "Authorization": "Bearer $globalBearerToken",
+    };
+
+    try {
+      final response = await http.get(url, headers: headers);
+      Map<String, dynamic> accessibity = jsonDecode(response.body);
+      print(accessibity[0]["Accessibility"]);
+      return accessibity[0]["Accessibility"];
+    } catch (e) {
+      return e.toString();
+    }
+
+    return globalResponseMap["Accessibility"];
+  }
   Future<void> getNickName() async {
     final url = Uri.parse('https://pd.na.a.pvp.net/name-service/v2/players');
 
@@ -81,7 +101,6 @@ class GetParty implements Clear {
   void getMembersGameName(String response) {
     List<dynamic> jsonMap = json.decode(response);
     globalMembersNames.add(jsonMap[0]['GameName']);
-    print('teste');
     print(jsonMap);
   }
 

@@ -23,7 +23,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
   bool isLoading = false;
   String resultText = '';
   bool queueState = false;
-  bool isAccessible = true;
+  late bool isAccessible = false;
   int numPlayers = 0;
   bool isPLayerFound = false;
   var snackBar;
@@ -33,6 +33,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
   void initState() {
     super.initState();
     numPlayers = globalMembersUuids.length;
+    checkAccessibility();
   }
 
   void onPressed() async {
@@ -52,7 +53,13 @@ class StartQueueGame extends State<StartQueueGameButton> {
   //     resultText = result;
   //   });
   // }
-
+void checkAccessibility(){
+  if(partyInfo.getAccessibility() == "OPEN"){
+    isAccessible = true;
+  }else{
+    isAccessible = false;
+  }
+}
   void leaveOnPressed() async {
     isLoading = true;
     final leaveResult = await _leaveQueueAction();
@@ -64,6 +71,9 @@ class StartQueueGame extends State<StartQueueGameButton> {
   }
   
   void changeAccessibility() async {
+    
+    Future<String> partyAcessibility;
+    partyAcessibility = partyInfo.getAccessibility();
     setState(() {
       isAccessible ? isAccessible = false : isAccessible = true;
       isAccessible ? _setAccessibility('OPEN') : _setAccessibility('CLOSED');
@@ -125,8 +135,11 @@ class StartQueueGame extends State<StartQueueGameButton> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+           Padding(
         children: [  
           Padding(
+
             padding: EdgeInsets.only(left: 16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -210,7 +223,8 @@ class StartQueueGame extends State<StartQueueGameButton> {
                 color: Color.fromARGB(255, 238, 65, 79),
               ),
             ),
-          
+
+              )
             SizedBox(
               child: ElevatedButton(onPressed: showAddPlayerDiaglog, 
               style: ElevatedButton.styleFrom(
@@ -301,7 +315,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
     try {
     final response = await http.post(url, headers: headers, body: jsonEncode(body));
     } catch (e) {
-     print(e);
+     Exception(e);
     }
     
  }
@@ -371,18 +385,14 @@ class StartQueueGame extends State<StartQueueGameButton> {
     try {
       final response = await http.post(url, headers: headers);
       if(response.statusCode == 200){
-        print(response.body);
         isPLayerFound = true;
         return true;
       }
       else{
-        print(response.statusCode);
-        print(response.headers);
         isPLayerFound = false;
         return false;
       }
     } catch (e) {
-      print(e);
       return false;
     }
 
