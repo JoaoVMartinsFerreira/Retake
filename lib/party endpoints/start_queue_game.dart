@@ -140,11 +140,13 @@ void checkAccessibility(){
 
             padding: EdgeInsets.only(left: 16.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Switch(value: isAccessible, 
                   onChanged: (value) => changeAccessibility(),
                   ),
+                  SizedBox(width: 10,),
+                  Text(accessibilityText(), style: TextStyle(color: Colors.white, fontFamily: 'TungstenThin', fontSize: 25), ),
               ],
             ),
           ),        
@@ -171,7 +173,7 @@ void checkAccessibility(){
                             child: Image.network(globalMembersCardsUrls[index]),
                           ),
                           Positioned.fill(
-                            left: 300,
+                            left: 230,
                             child: Text(globalMembersNames[index], 
                             style: const TextStyle(backgroundColor: Color.fromARGB(255,235, 238, 178),
                             fontFamily: 'TungstenBold', fontSize: 20, color: Color.fromARGB(255, 31, 33, 38)),
@@ -221,7 +223,6 @@ void checkAccessibility(){
                 color: Color.fromARGB(255, 238, 65, 79),
               ),
             ),
-
             SizedBox(
               child: ElevatedButton(onPressed: showAddPlayerDiaglog, 
               style: ElevatedButton.styleFrom(
@@ -397,4 +398,7 @@ void checkAccessibility(){
   bool checkInviteStatus(bool inviteStatus){
     return inviteStatus ? true : false;
   }
-}
+  String accessibilityText(){
+    return isAccessible ? "Grupo aberto" : "Grupo Fechado";
+   } 
+  }
