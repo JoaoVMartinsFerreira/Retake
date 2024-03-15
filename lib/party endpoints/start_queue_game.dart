@@ -138,15 +138,15 @@ void checkAccessibility(){
         children: [
           Padding(
 
-            padding: EdgeInsets.only(left: 16.0),
+            padding: const EdgeInsets.only(left: 16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Switch(value: isAccessible, 
                   onChanged: (value) => changeAccessibility(),
                   ),
-                  SizedBox(width: 10,),
-                  Text(accessibilityText(), style: TextStyle(color: Colors.white, fontFamily: 'TungstenThin', fontSize: 25), ),
+                  const SizedBox(width: 10,),
+                  Text(accessibilityText(), style: const TextStyle(color: Colors.white, fontFamily: 'TungstenThin', fontSize: 25), ),
               ],
             ),
           ),        
