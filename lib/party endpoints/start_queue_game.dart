@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
@@ -151,26 +152,28 @@ class StartQueueGame extends State<StartQueueGameButton> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Switch(
-                      value: isAccessible,
-                      onChanged: (value) => changeAccessibility(),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      accessibilityText(),
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'TungstenThin',
-                          fontSize: 25),
-                    ),
-                  ],
+              SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Switch(
+                        value: isAccessible,
+                        onChanged: (value) => changeAccessibility(),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        accessibilityText(),
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontFamily: 'TungstenThin',
+                            fontSize: 25),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               Expanded(
