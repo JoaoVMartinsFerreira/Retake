@@ -32,19 +32,19 @@ class AuthCookies {
       if (response.statusCode == 200) {
         return desiredCookies;
       } else {
-        ' Erro no auth: ${response.statusCode}';
+        '${response.statusCode}';
       }
     } catch (e) {
-      return 'Erro $e';
-    }
+      Exception(e);
+  }
     return 'erro!!!!!';
   }
 
-  String _extractDesiredCookieValues(String cookieString) {
+  String _extractDesiredCookieValues(String cookie) {
     List<String> desiredCookies = [];
 
     RegExp desiredCookiePattern = RegExp(r'(clid|asid|__cf_bm|tdid)=([^;]+)');
-    Iterable<Match> matches = desiredCookiePattern.allMatches(cookieString);
+    Iterable<Match> matches = desiredCookiePattern.allMatches(cookie);
 
     for (Match match in matches) {
       desiredCookies.add("${match.group(1)}=${match.group(2)}");
