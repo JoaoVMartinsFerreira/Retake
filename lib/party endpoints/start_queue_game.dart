@@ -188,7 +188,6 @@ void clear(){
               Expanded(
                 child: RefreshIndicator(
                   onRefresh: () async{
-                    print('refresh--------------------------------------------------------');
                     clear();
                     getparty();
                       
