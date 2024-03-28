@@ -40,8 +40,8 @@ class GetText {
   String separateVersion(String response) {
     Map<String,dynamic> jsonMap = json.decode(response);
     Map<String, dynamic> jsonData = jsonMap['data'];
-    globalVersion = jsonData['version'];
-    return jsonData['version'];
+    globalVersion = jsonData["riotClientVersion"];
+    return jsonData["riotClientVersion"];
   }
 
   String getVersionText(){

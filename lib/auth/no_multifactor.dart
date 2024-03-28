@@ -8,9 +8,8 @@ import 'package:retake_app/party%20endpoints/get_party_player.dart';
 
 class NoMultifacfor{
 final authRequest = AuthRequest();
-  /***
-   * Método usando quando a conta não requer verificaçãode duas etapas
-   */
+  /// *
+  /// Método usando quando a conta não requer verificaçãode duas etapas
    Future noMfa() async{
      final entitlements = EntitlementsToken();
     final playerInfo = PlayerInfo();
