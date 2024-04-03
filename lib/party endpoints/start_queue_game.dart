@@ -201,7 +201,7 @@ void clear(){
                         height: 100,
                         padding: const EdgeInsets.symmetric(vertical: 10.0),
                         child: GestureDetector(
-                          onTap: () => {removePlater(globalMembersUuids[index])},
+                          onTap: () => {print(globalMembersCardsUuids)},
                           child: Card(
                             margin: const EdgeInsets.all(8.0),
                             color: Colors.transparent,

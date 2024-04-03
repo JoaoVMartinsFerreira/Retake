@@ -41,7 +41,7 @@ class GetText {
     Map<String,dynamic> jsonMap = json.decode(response);
     Map<String, dynamic> jsonData = jsonMap['data'];
     globalVersion = jsonData["riotClientVersion"];
-    return jsonData["riotClientVersion"];
+    return jsonData[ "riotClientVersion"];
   }
 
   String getVersionText(){

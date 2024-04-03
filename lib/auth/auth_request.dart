@@ -154,8 +154,6 @@ Widget build(BuildContext context) {
      final Map<String,String> headers = {     
       "cookie": cookies,
       "Content-Type": "application/json",
-      //"Set-Cookie": "SameSite=None"
-
   }; 
     globalCookies = cookies;
     final body = {
