@@ -3,7 +3,7 @@ import 'package:retake_app/auth/multi_factor_authentication.dart';
 import 'package:retake_app/custom%20widgets/footer_menu_bar.dart';
 import 'package:retake_app/party%20endpoints/change_queue.dart';
 import 'package:retake_app/party%20endpoints/get_party.dart';
-import 'package:retake_app/party%20endpoints/party.dart';
+import 'package:retake_app/party%20endpoints/start_game_queue.dart';
 import 'package:retake_app/store%20endpoints/prices.dart';
 
 bool globalScreenIndicator = false;
