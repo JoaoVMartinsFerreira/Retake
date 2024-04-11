@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:http/http.dart' as http;
 import 'package:retake_app/auth/entitlements_token.dart';
 import 'package:retake_app/auth/multi_factor_authentication.dart';
 import 'package:retake_app/auth/player_info.dart';
 import 'package:retake_app/clear/clear.dart';
+import 'package:retake_app/local%20endpoints/friends.dart';
 import 'package:retake_app/party%20endpoints/get_party_player.dart';
 import 'dart:convert';
 
@@ -14,6 +17,7 @@ List<dynamic> globalMembersCardsUuids = [];
 List<dynamic> globalMembersNames = [];
 List<String> globalMembersCardsUrls = [];
 List<String> globalMembersTitles = [];
+
 class GetParty implements Clear {
   Future<String> getParty() async {
     final url = Uri.parse(
@@ -35,17 +39,15 @@ class GetParty implements Clear {
         await getMembersNickName();
         return response.body;
       } else {
-        print(response.body);
-        print(response.statusCode);
         return 'Erro';
       }
     } catch (e) {
-      print('------------------ERRO--------------: $e');
       return '$e';
     }
   }
-  Future<String> getAccessibility() async{
-        final url = Uri.parse(
+
+  Future<String> getAccessibility() async {
+    final url = Uri.parse(
         'https://glz-br-1.na.a.pvp.net/parties/v1/parties/$globalPartyId');
 
     final Map<String, String> headers = {
@@ -61,9 +63,8 @@ class GetParty implements Clear {
     } catch (e) {
       return e.toString();
     }
-
-    return globalResponseMap["Accessibility"];
   }
+
   Future<void> getNickName() async {
     final url = Uri.parse('https://pd.na.a.pvp.net/name-service/v2/players');
 
@@ -78,10 +79,9 @@ class GetParty implements Clear {
           headers: headers, body: jsonEncode(nameServiceBody));
       if (response.statusCode == 200) {
         getGameName(response.body);
-      } else {
-      }
+      } else {}
     } catch (e) {
-      print('Erro $e');
+      Exception(e);
     }
   }
 
@@ -101,7 +101,6 @@ class GetParty implements Clear {
   void getMembersGameName(String response) {
     List<dynamic> jsonMap = json.decode(response);
     globalMembersNames.add(jsonMap[0]['GameName']);
-    print(jsonMap);
   }
 
   String getCardDisplayIcon() {
@@ -121,14 +120,13 @@ class GetParty implements Clear {
       globalMembersUuids.add(member['PlayerIdentity']['Subject']);
     }
   }
-  void getMembersTitles(String response){
-    List<dynamic> members = globalResponseMap['Members'];
-    for(var member in members){
-      globalMembersTitles.add(member['PlayerIdentity']['PlayerTitleID']);
-    }
-    print('TITLES');
-    print(globalMembersTitles);
-  }
+
+  // void getMembersTitles(String response){
+  //   List<dynamic> members = globalResponseMap['Members'];
+  //   for(var member in members){
+  //     globalMembersTitles.add(member['PlayerIdentity']['PlayerTitleID']);
+  //   }
+  // }
   Future<void> getMembersNickName() async {
     final url = Uri.parse('https://pd.na.a.pvp.net/name-service/v2/players');
 
@@ -137,19 +135,18 @@ class GetParty implements Clear {
       "Authorization": "Bearer $globalBearerToken",
     };
 
-    
+    List<String> nameServiceBody = [];
     for (var uuid in globalMembersUuids) {
-      List<String> nameServiceBody = [uuid];  
-    try {
-      final response = await http.put(url,
-          headers: headers, body: jsonEncode(nameServiceBody));
-      if (response.statusCode == 200) {
-        getMembersGameName(response.body);
-      } else {
+      nameServiceBody = [uuid];
+      try {
+        final response = await http.put(url,
+            headers: headers, body: jsonEncode(nameServiceBody));
+        if (response.statusCode == 200) {
+          getMembersGameName(response.body);
+        }
+      } catch (e) {
+        Exception(e);
       }
-    } catch (e) {
-      print(e);
-    }
     }
   }
 
@@ -159,6 +156,7 @@ class GetParty implements Clear {
           .add('https://media.valorant-api.com/playercards/$uuid/wideart.png');
     }
   }
+
   @override
   void clear() {
     globalResponseMap.clear();

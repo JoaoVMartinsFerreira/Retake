@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:retake_app/auth/auth_request.dart';
 import 'package:retake_app/menu/main_menu.dart';
+import 'package:retake_app/party%20endpoints/get_party.dart';
 import 'package:retake_app/store%20endpoints/prices.dart';
 
 class FooterMenuBar extends StatefulWidget{
@@ -13,6 +14,7 @@ class FooterMenuBar extends StatefulWidget{
 class _FooterMenuBarState extends State<FooterMenuBar> {
  
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
+  final clear = GetParty();
   final List<Widget> _telas = [
     const AuthRequestButton(),
     const MainMenu(),
@@ -24,6 +26,7 @@ class _FooterMenuBarState extends State<FooterMenuBar> {
     index == 1 ?
      _drawerKey.currentState?.openEndDrawer(): setState(() {
       _indiceAtual = 0;
+      clear.clear();
     });
   }
     

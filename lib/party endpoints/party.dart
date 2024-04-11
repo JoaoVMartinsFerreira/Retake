@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:retake_app/auth/entitlements_token.dart';
 import 'package:retake_app/auth/multi_factor_authentication.dart';
-import 'package:retake_app/clear/clear.dart';
 import 'package:retake_app/custom%20widgets/diamond_button.dart';
 import 'package:retake_app/desktop/gettext/get_text.dart';
 import 'package:retake_app/party%20endpoints/get_party.dart';
@@ -19,26 +18,28 @@ class StartQueueGameButton extends StatefulWidget {
 }
 
 class StartQueueGame extends State<StartQueueGameButton> {
-  bool _isLoading = false;
-  String _resultText = '';
-  bool _queueState = false;
-  late bool _isAccessible = false;
-  bool _isPLayerFound = false;
-  var _snackBar;
+  bool isLoading = false;
+  String resultText = '';
+  bool queueState = false;
+  late bool isAccessible = false;
+  int numPlayers = 0;
+  bool isPLayerFound = false;
+  var snackBar;
   final GlobalKey<StartQueueGame> widgetKey = GlobalKey();
-  GetParty _partyInfo = GetParty();
+  GetParty partyInfo = GetParty();
   @override
   void initState() {
     super.initState();
+    numPlayers = globalMembersUuids.length;
     checkAccessibility();
   }
 
   void onPressed() async {
-    _isLoading = true;
-    final result = await _startQueueAction();
+    isLoading = true;
+    final result = await startQueueAction();
     setState(() {
-      _isLoading = false;
-      _resultText = result;
+      isLoading = false;
+      resultText = result;
     });
   }
 
@@ -51,30 +52,40 @@ class StartQueueGame extends State<StartQueueGameButton> {
   //   });
   // }
   void checkAccessibility() {
-    if (_partyInfo.getAccessibility() == "OPEN") {
-      _isAccessible = true;
+    if (partyInfo.getAccessibility() == "OPEN") {
+      isAccessible = true;
     } else {
-      _isAccessible = false;
+      isAccessible = false;
     }
   }
 
   void leaveOnPressed() async {
-    _isLoading = true;
+    isLoading = true;
     final leaveResult = await _leaveQueueAction();
 
     setState(() {
-      _isLoading = false;
-      _resultText = leaveResult;
+      isLoading = false;
+      resultText = leaveResult;
     });
   }
 
   void changeAccessibility() async {
     Future<String> partyAcessibility;
-    partyAcessibility = _partyInfo.getAccessibility();
+    partyAcessibility = partyInfo.getAccessibility();
     setState(() {
-      _isAccessible ? _isAccessible = false : _isAccessible = true;
-      _isAccessible ? _setAccessibility('OPEN') : _setAccessibility('CLOSED');
+      isAccessible ? isAccessible = false : isAccessible = true;
+      isAccessible ? _setAccessibility('OPEN') : _setAccessibility('CLOSED');
     });
+  }
+
+  void addPlayer() {
+    setState(() {
+      numPlayers++;
+    });
+  }
+
+  void removePlayer() {
+    setState(() {});
   }
 
   void showAddPlayerDiaglog() {
@@ -104,12 +115,12 @@ class StartQueueGame extends State<StartQueueGameButton> {
               TextButton(
                   onPressed: () {
                     _invitePlater(playerName);
-                    if (_checkInviteStatus(_isPLayerFound)) {
+                    if (checkInviteStatus(isPLayerFound)) {
                       //Navigator.pop(context);
                     } else {
-                      _snackBar = const SnackBar(
+                      snackBar = const SnackBar(
                           content: Text("Jogador não encontrado"));
-                      ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     }
                     Navigator.of(context).pop();
                   },
@@ -146,14 +157,14 @@ class StartQueueGame extends State<StartQueueGameButton> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Switch(
-                        value: _isAccessible,
+                        value: isAccessible,
                         onChanged: (value) => changeAccessibility(),
                       ),
                       const SizedBox(
                         width: 10,
                       ),
                       Text(
-                        _accessibilityText(),
+                        accessibilityText(),
                         style: const TextStyle(
                             color: Colors.white,
                             fontFamily: 'TungstenThin',
@@ -164,56 +175,49 @@ class StartQueueGame extends State<StartQueueGameButton> {
                 ),
               ),
               Expanded(
-                child: RefreshIndicator(
-                  onRefresh: () async{
-                    clear();
-                    getparty();
-                      
-                  },
-                  child: ListView.builder(
-                    scrollDirection: Axis.vertical,
-                    itemCount: globalMembersUuids.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        width: 200,
-                        height: 100,
-                        padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        child: GestureDetector(
-                          onTap: () => {print(globalMembersCardsUuids)},
-                          child: Card(
-                            margin: const EdgeInsets.all(8.0),
-                            color: Colors.transparent,
-                            child: Stack(
-                              children: [
-                                Positioned.directional(
-                                  textDirection: TextDirection.ltr,
-                                  child: Image.network(
-                                      globalMembersCardsUrls[index]),
+                child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  itemCount: globalMembersUuids.length,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      width: 200,
+                      height: 100,
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: GestureDetector(
+                        onTap: () => {removePlater(globalMembersUuids[index])},
+                        child: Card(
+                          margin: const EdgeInsets.all(8.0),
+                          color: Colors.transparent,
+                          child: Stack(
+                            children: [
+                              Positioned.directional(
+                                textDirection: TextDirection.ltr,
+                                child: Image.network(
+                                    globalMembersCardsUrls[index]),
+                              ),
+                              Positioned.fill(
+                                left: 230,
+                                child: Text(
+                                  globalMembersNames[index],
+                                  style: const TextStyle(
+                                      backgroundColor:
+                                          Color.fromARGB(255, 235, 238, 178),
+                                      fontFamily: 'TungstenBold',
+                                      fontSize: 20,
+                                      color: Color.fromARGB(255, 31, 33, 38)),
                                 ),
-                                Positioned.fill(
-                                  left: 230,
-                                  child: Text(
-                                    globalMembersNames[index],
-                                    style: const TextStyle(
-                                        backgroundColor:
-                                            Color.fromARGB(255, 235, 238, 178),
-                                        fontFamily: 'TungstenBold',
-                                        fontSize: 20,
-                                        color: Color.fromARGB(255, 31, 33, 38)),
-                                  ),
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
-                      );
-                    },
-                  ),
+                      ),
+                    );
+                  },
                 ),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _isLoading ? null : onPressed,
+                onPressed: isLoading ? null : onPressed,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 238, 65, 79),
                   foregroundColor: const Color.fromARGB(255, 255, 255, 255),
@@ -233,13 +237,13 @@ class StartQueueGame extends State<StartQueueGameButton> {
               ),
               const SizedBox(height: 20),
               DiamondFAB(
-                onPressed: _isLoading ? null : leaveOnPressed,
+                onPressed: isLoading ? null : leaveOnPressed,
               ),
-              if (_isLoading)
+              if (isLoading)
                 const CircularProgressIndicator()
               else
                 Text(
-                  _resultText,
+                  resultText,
                   style: const TextStyle(
                     backgroundColor: Colors.transparent,
                     fontFamily: 'TungstenThin',
@@ -266,7 +270,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
     );
   }
 
-  Future<String> _startQueueAction() async {
+  Future<String> startQueueAction() async {
     final url = Uri.parse(
         'https://glz-br-1.na.a.pvp.net/parties/v1/parties/$globalPartyId/matchmaking/join');
     final Map<String, String> headers = {
@@ -277,7 +281,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
     try {
       final response = await http.post(url, headers: headers);
       if (response.statusCode == 200) {
-        _queueState = true;
+        queueState = true;
         return 'Na fila';
       } else {
         return 'Houve algum problema';
@@ -300,7 +304,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
     try {
       final response = await http.post(url, headers: headers);
       if (response.statusCode == 200) {
-        _queueState = false;
+        queueState = false;
         return '';
       } else {
         return 'Houve algum problema';
@@ -310,7 +314,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
     }
   }
 
-  Future<void> _removePlayer(String puuid) async {
+  Future<void> removePlater(String puuid) async {
     final url =
         Uri.parse('https://glz-br-1.na.a.pvp.net/parties/v1/players/$puuid');
 
@@ -342,7 +346,60 @@ class StartQueueGame extends State<StartQueueGameButton> {
       Exception(e);
     }
   }
-  
+  // Future<String> preGamePlayer() async {
+  //   final url = Uri.parse(
+  //       'https://glz-br-1.na.a.pvp.net/pregame/v1/matches/$globalPuuid');
+  //   bool isInPreGame = false;
+  //   final Map<String, String> headers = {
+  //     "X-Riot-Entitlements-JWT": globalEntitlementToken,
+  //     "Authorization": "Bearer $globalBearerToken",
+  //   };
+  //   Map<String, dynamic> jsonResponse = {};
+  //   String result = '';
+  //   while (isInPreGame == false) {
+  //     Future.delayed(const Duration(seconds: 1), () async {
+  //       try {
+  //         final response = await http.get(url, headers: headers);
+  //         if (response.statusCode == 200) {
+  //           jsonResponse = jsonDecode(response.body);
+  //           globalMatchId = jsonResponse['MatchID'];
+  //           isInPreGame = true;
+  //           result = 'sucesso';
+  //           return 'sucesso';
+  //         }
+  //       } catch (e) {
+  //         print(e);
+  //       }
+  //     });
+  //   }
+  //   print(globalMatchId);
+  //   return result;
+  // }
+  // Future<String> preGameQuit() async {
+  //   final url = Uri.parse(
+  //       'https://glz-br-1.na.a.pvp.net/pregame/v1/matches/$globalMatchId');
+
+  //   final Map<String, String> headers = {
+  //     "X-Riot-Entitlements-JWT": globalEntitlementToken,
+  //     "Authorization": "Bearer $globalBearerToken",
+  //   };
+
+  //   try {
+  //     final response = await http.post(url, headers: headers);
+  //     if (response.statusCode == 200) {
+  //       print('saiu da partida');
+  //       return 'sucesso';
+  //     } else {
+  //       print('erro');
+  //       print(response.body);
+  //       print(response.statusCode);
+  //       return 'erro';
+  //     }
+  //   } catch (e) {
+  //     print(e);
+  //     return 'erro ao fazer a reuisição';
+  //   }
+  // }
 
   Future<bool> _invitePlater(String name) async {
     final url = Uri.parse(
@@ -356,10 +413,10 @@ class StartQueueGame extends State<StartQueueGameButton> {
     try {
       final response = await http.post(url, headers: headers);
       if (response.statusCode == 200) {
-        _isPLayerFound = true;
+        isPLayerFound = true;
         return true;
       } else {
-        _isPLayerFound = false;
+        isPLayerFound = false;
         return false;
       }
     } catch (e) {
@@ -367,11 +424,11 @@ class StartQueueGame extends State<StartQueueGameButton> {
     }
   }
 
-  bool _checkInviteStatus(bool inviteStatus) {
+  bool checkInviteStatus(bool inviteStatus) {
     return inviteStatus ? true : false;
   }
 
-  String _accessibilityText() {
-    return _isAccessible ? "Grupo aberto" : "Grupo Fechado";
+  String accessibilityText() {
+    return isAccessible ? "Grupo aberto" : "Grupo Fechado";
   }
 }
