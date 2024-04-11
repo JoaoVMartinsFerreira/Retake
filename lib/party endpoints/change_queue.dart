@@ -38,7 +38,7 @@ class ChangeQueue {
         // print("-------------ERRO-------------------------------");
       }
     } catch (e) {
-      print(e);
+      Exception(e);
     }
   }
 }
