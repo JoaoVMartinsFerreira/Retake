@@ -1,7 +1,5 @@
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:retake_app/auth/entitlements_token.dart';
 import 'package:retake_app/auth/multi_factor_authentication.dart';
@@ -20,28 +18,26 @@ class StartQueueGameButton extends StatefulWidget {
 }
 
 class StartQueueGame extends State<StartQueueGameButton> {
-  bool isLoading = false;
-  String resultText = '';
-  bool queueState = false;
-  late bool isAccessible = false;
-  int numPlayers = 0;
-  bool isPLayerFound = false;
-  var snackBar;
+  bool _isLoading = false;
+  String _resultText = '';
+  bool _queueState = false;
+  late bool _isAccessible = false;
+  bool _isPLayerFound = false;
+  var _snackBar;
   final GlobalKey<StartQueueGame> widgetKey = GlobalKey();
-  GetParty partyInfo = GetParty();
+  GetParty _partyInfo = GetParty();
   @override
   void initState() {
     super.initState();
-    numPlayers = globalMembersUuids.length;
     checkAccessibility();
   }
 
   void onPressed() async {
-    isLoading = true;
-    final result = await startQueueAction();
+    _isLoading = true;
+    final result = await _startQueueAction();
     setState(() {
-      isLoading = false;
-      resultText = result;
+      _isLoading = false;
+      _resultText = result;
     });
   }
 
@@ -54,40 +50,30 @@ class StartQueueGame extends State<StartQueueGameButton> {
   //   });
   // }
   void checkAccessibility() {
-    if (partyInfo.getAccessibility() == "OPEN") {
-      isAccessible = true;
+    if (_partyInfo.getAccessibility() == "OPEN") {
+      _isAccessible = true;
     } else {
-      isAccessible = false;
+      _isAccessible = false;
     }
   }
 
   void leaveOnPressed() async {
-    isLoading = true;
+    _isLoading = true;
     final leaveResult = await _leaveQueueAction();
 
     setState(() {
-      isLoading = false;
-      resultText = leaveResult;
+      _isLoading = false;
+      _resultText = leaveResult;
     });
   }
 
   void changeAccessibility() async {
     Future<String> partyAcessibility;
-    partyAcessibility = partyInfo.getAccessibility();
+    partyAcessibility = _partyInfo.getAccessibility();
     setState(() {
-      isAccessible ? isAccessible = false : isAccessible = true;
-      isAccessible ? _setAccessibility('OPEN') : _setAccessibility('CLOSED');
+      _isAccessible ? _isAccessible = false : _isAccessible = true;
+      _isAccessible ? _setAccessibility('OPEN') : _setAccessibility('CLOSED');
     });
-  }
-
-  void addPlayer() {
-    setState(() {
-      numPlayers++;
-    });
-  }
-
-  void removePlayer() {
-    setState(() {});
   }
 
   void showAddPlayerDiaglog() {
@@ -117,12 +103,12 @@ class StartQueueGame extends State<StartQueueGameButton> {
               TextButton(
                   onPressed: () {
                     _invitePlater(playerName);
-                    if (checkInviteStatus(isPLayerFound)) {
+                    if (_checkInviteStatus(_isPLayerFound)) {
                       //Navigator.pop(context);
                     } else {
-                      snackBar = const SnackBar(
+                      _snackBar = const SnackBar(
                           content: Text("Jogador não encontrado"));
-                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      ScaffoldMessenger.of(context).showSnackBar(_snackBar);
                     }
                     Navigator.of(context).pop();
                   },
@@ -159,14 +145,14 @@ class StartQueueGame extends State<StartQueueGameButton> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Switch(
-                        value: isAccessible,
+                        value: _isAccessible,
                         onChanged: (value) => changeAccessibility(),
                       ),
                       const SizedBox(
                         width: 10,
                       ),
                       Text(
-                        accessibilityText(),
+                        _accessibilityText(),
                         style: const TextStyle(
                             color: Colors.white,
                             fontFamily: 'TungstenThin',
@@ -186,7 +172,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
                       height: 100,
                       padding: const EdgeInsets.symmetric(vertical: 10.0),
                       child: GestureDetector(
-                        onTap: () => {removePlater(globalMembersUuids[index])},
+                        onTap: () => {_removePlayer(globalMembersUuids[index])},
                         child: Card(
                           margin: const EdgeInsets.all(8.0),
                           color: Colors.transparent,
@@ -219,7 +205,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: isLoading ? null : onPressed,
+                onPressed: _isLoading ? null : onPressed,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 238, 65, 79),
                   foregroundColor: const Color.fromARGB(255, 255, 255, 255),
@@ -239,13 +225,13 @@ class StartQueueGame extends State<StartQueueGameButton> {
               ),
               const SizedBox(height: 20),
               DiamondFAB(
-                onPressed: isLoading ? null : leaveOnPressed,
+                onPressed: _isLoading ? null : leaveOnPressed,
               ),
-              if (isLoading)
+              if (_isLoading)
                 const CircularProgressIndicator()
               else
                 Text(
-                  resultText,
+                  _resultText,
                   style: const TextStyle(
                     backgroundColor: Colors.transparent,
                     fontFamily: 'TungstenThin',
@@ -272,7 +258,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
     );
   }
 
-  Future<String> startQueueAction() async {
+  Future<String> _startQueueAction() async {
     final url = Uri.parse(
         'https://glz-br-1.na.a.pvp.net/parties/v1/parties/$globalPartyId/matchmaking/join');
     final Map<String, String> headers = {
@@ -283,7 +269,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
     try {
       final response = await http.post(url, headers: headers);
       if (response.statusCode == 200) {
-        queueState = true;
+        _queueState = true;
         return 'Na fila';
       } else {
         return 'Houve algum problema';
@@ -306,7 +292,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
     try {
       final response = await http.post(url, headers: headers);
       if (response.statusCode == 200) {
-        queueState = false;
+        _queueState = false;
         return '';
       } else {
         return 'Houve algum problema';
@@ -316,7 +302,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
     }
   }
 
-  Future<void> removePlater(String puuid) async {
+  Future<void> _removePlayer(String puuid) async {
     final url =
         Uri.parse('https://glz-br-1.na.a.pvp.net/parties/v1/players/$puuid');
 
@@ -348,60 +334,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
       Exception(e);
     }
   }
-  // Future<String> preGamePlayer() async {
-  //   final url = Uri.parse(
-  //       'https://glz-br-1.na.a.pvp.net/pregame/v1/matches/$globalPuuid');
-  //   bool isInPreGame = false;
-  //   final Map<String, String> headers = {
-  //     "X-Riot-Entitlements-JWT": globalEntitlementToken,
-  //     "Authorization": "Bearer $globalBearerToken",
-  //   };
-  //   Map<String, dynamic> jsonResponse = {};
-  //   String result = '';
-  //   while (isInPreGame == false) {
-  //     Future.delayed(const Duration(seconds: 1), () async {
-  //       try {
-  //         final response = await http.get(url, headers: headers);
-  //         if (response.statusCode == 200) {
-  //           jsonResponse = jsonDecode(response.body);
-  //           globalMatchId = jsonResponse['MatchID'];
-  //           isInPreGame = true;
-  //           result = 'sucesso';
-  //           return 'sucesso';
-  //         }
-  //       } catch (e) {
-  //         print(e);
-  //       }
-  //     });
-  //   }
-  //   print(globalMatchId);
-  //   return result;
-  // }
-  // Future<String> preGameQuit() async {
-  //   final url = Uri.parse(
-  //       'https://glz-br-1.na.a.pvp.net/pregame/v1/matches/$globalMatchId');
-
-  //   final Map<String, String> headers = {
-  //     "X-Riot-Entitlements-JWT": globalEntitlementToken,
-  //     "Authorization": "Bearer $globalBearerToken",
-  //   };
-
-  //   try {
-  //     final response = await http.post(url, headers: headers);
-  //     if (response.statusCode == 200) {
-  //       print('saiu da partida');
-  //       return 'sucesso';
-  //     } else {
-  //       print('erro');
-  //       print(response.body);
-  //       print(response.statusCode);
-  //       return 'erro';
-  //     }
-  //   } catch (e) {
-  //     print(e);
-  //     return 'erro ao fazer a reuisição';
-  //   }
-  // }
+  
 
   Future<bool> _invitePlater(String name) async {
     final url = Uri.parse(
@@ -415,10 +348,10 @@ class StartQueueGame extends State<StartQueueGameButton> {
     try {
       final response = await http.post(url, headers: headers);
       if (response.statusCode == 200) {
-        isPLayerFound = true;
+        _isPLayerFound = true;
         return true;
       } else {
-        isPLayerFound = false;
+        _isPLayerFound = false;
         return false;
       }
     } catch (e) {
@@ -426,11 +359,11 @@ class StartQueueGame extends State<StartQueueGameButton> {
     }
   }
 
-  bool checkInviteStatus(bool inviteStatus) {
+  bool _checkInviteStatus(bool inviteStatus) {
     return inviteStatus ? true : false;
   }
 
-  String accessibilityText() {
-    return isAccessible ? "Grupo aberto" : "Grupo Fechado";
+  String _accessibilityText() {
+    return _isAccessible ? "Grupo aberto" : "Grupo Fechado";
   }
 }
