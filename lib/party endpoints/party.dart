@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:retake_app/auth/entitlements_token.dart';
 import 'package:retake_app/auth/multi_factor_authentication.dart';
+import 'package:retake_app/clear/clear.dart';
 import 'package:retake_app/custom%20widgets/diamond_button.dart';
 import 'package:retake_app/desktop/gettext/get_text.dart';
 import 'package:retake_app/party%20endpoints/get_party.dart';
@@ -87,7 +90,15 @@ class StartQueueGame extends State<StartQueueGameButton> {
   void removePlayer() {
     setState(() {});
   }
-
+void getparty()async {
+  await partyInfo.getParty().then((value) => {
+    setState(() {
+    })
+  });
+}
+void clear(){
+    partyInfo.clear();
+  }
   void showAddPlayerDiaglog() {
     showDialog(
         context: context,
@@ -175,44 +186,51 @@ class StartQueueGame extends State<StartQueueGameButton> {
                 ),
               ),
               Expanded(
-                child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  itemCount: globalMembersUuids.length,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      width: 200,
-                      height: 100,
-                      padding: const EdgeInsets.symmetric(vertical: 10.0),
-                      child: GestureDetector(
-                        onTap: () => {removePlater(globalMembersUuids[index])},
-                        child: Card(
-                          margin: const EdgeInsets.all(8.0),
-                          color: Colors.transparent,
-                          child: Stack(
-                            children: [
-                              Positioned.directional(
-                                textDirection: TextDirection.ltr,
-                                child: Image.network(
-                                    globalMembersCardsUrls[index]),
-                              ),
-                              Positioned.fill(
-                                left: 230,
-                                child: Text(
-                                  globalMembersNames[index],
-                                  style: const TextStyle(
-                                      backgroundColor:
-                                          Color.fromARGB(255, 235, 238, 178),
-                                      fontFamily: 'TungstenBold',
-                                      fontSize: 20,
-                                      color: Color.fromARGB(255, 31, 33, 38)),
+                child: RefreshIndicator(
+                  onRefresh: () async{
+                    clear();
+                    getparty();
+
+                  },
+                  child: ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    itemCount: globalMembersUuids.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        width: 200,
+                        height: 100,
+                        padding: const EdgeInsets.symmetric(vertical: 10.0),
+                        child: GestureDetector(
+                          onTap: () => {print(globalMembersCardsUuids)},
+                          child: Card(
+                            margin: const EdgeInsets.all(8.0),
+                            color: Colors.transparent,
+                            child: Stack(
+                              children: [
+                                Positioned.directional(
+                                  textDirection: TextDirection.ltr,
+                                  child: Image.network(
+                                      globalMembersCardsUrls[index]),
                                 ),
-                              ),
-                            ],
+                                Positioned.fill(
+                                  left: 230,
+                                  child: Text(
+                                    globalMembersNames[index],
+                                    style: const TextStyle(
+                                        backgroundColor:
+                                            Color.fromARGB(255, 235, 238, 178),
+                                        fontFamily: 'TungstenBold',
+                                        fontSize: 20,
+                                        color: Color.fromARGB(255, 31, 33, 38)),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
