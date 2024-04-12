@@ -30,6 +30,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
   var snackBar;
   final GlobalKey<StartQueueGame> widgetKey = GlobalKey();
   GetParty partyInfo = GetParty();
+  String partyCode = '';
   @override
   void initState() {
     super.initState();
@@ -190,7 +191,8 @@ void clear(){
                   onRefresh: () async{
                     clear();
                     getparty();
-                      
+                    print('aaa');
+                    //generatePartyCode();
                   },
                   child: ListView.builder(
                     scrollDirection: Axis.vertical,
@@ -302,6 +304,7 @@ void clear(){
         queueState = true;
         return 'Na fila';
       } else {
+        print(response.statusCode);
         return 'Houve algum problema';
       }
     } catch (e) {
@@ -360,6 +363,11 @@ void clear(){
     try {
       final response =
           await http.post(url, headers: headers, body: jsonEncode(body));
+          if(response.statusCode == 200){
+            print('certo');
+          }else{
+            print(response.statusCode);
+          }
     } catch (e) {
       Exception(e);
     }
@@ -449,4 +457,28 @@ void clear(){
   String accessibilityText() {
     return isAccessible ? "Grupo aberto" : "Grupo Fechado";
   }
+  
+  void generatePartyCode() async {
+    final url = Uri.parse('https://glz-br-1.na.a.pvp.net/parties/v1/parties/$globalPartyId/invitecode');
+
+    final Map<String, String> headers = {
+      "X-Riot-Entitlements-JWT": globalEntitlementToken,
+      "Authorization": "Bearer $globalBearerToken",
+    };
+
+    try {
+      final response = await http.post(url, headers: headers);
+      if(response.statusCode == 200){
+        separatePartyCode(response.body);
+      }
+    } catch (e) {
+      
+    }
+  }
+  void separatePartyCode(String response){
+    Map<String, dynamic> jsonMap = json.decode(response);
+    partyCode = jsonMap['InviteCode'];
+    print(partyCode);
+  }
+    
 }
