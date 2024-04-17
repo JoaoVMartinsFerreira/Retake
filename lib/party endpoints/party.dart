@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:retake_app/auth/entitlements_token.dart';
 import 'package:retake_app/auth/multi_factor_authentication.dart';
+import 'package:retake_app/clear/clear.dart';
 import 'package:retake_app/custom%20widgets/diamond_button.dart';
 import 'package:retake_app/desktop/gettext/get_text.dart';
 import 'package:retake_app/party%20endpoints/get_party.dart';
@@ -27,6 +30,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
   var snackBar;
   final GlobalKey<StartQueueGame> widgetKey = GlobalKey();
   GetParty partyInfo = GetParty();
+  String partycode = '';
   @override
   void initState() {
     super.initState();
@@ -87,7 +91,15 @@ class StartQueueGame extends State<StartQueueGameButton> {
   void removePlayer() {
     setState(() {});
   }
-
+void getparty()async {
+  await partyInfo.getParty().then((value) => {
+    setState(() {
+    })
+  });
+}
+void clear(){
+    partyInfo.clear();
+  }
   void showAddPlayerDiaglog() {
     showDialog(
         context: context,
@@ -133,7 +145,11 @@ class StartQueueGame extends State<StartQueueGameButton> {
           );
         });
   }
-
+void generatePartyCodeState() {
+  setState((){
+     generatePartyCode();
+  });
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -174,45 +190,82 @@ class StartQueueGame extends State<StartQueueGameButton> {
                   ),
                 ),
               ),
+               Padding(
+                padding: const EdgeInsets.only(left: 16.0),
+                child: Row(
+                  children: [
+                    Text(
+                      partycode,
+                      style: const TextStyle(
+                            color: Colors.white,
+                            fontFamily: 'TungstenThin',
+                            fontSize: 25),     
+                    ),
+                    const SizedBox(width: 10,),
+                    SizedBox(
+                      width: 120,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: generatePartyCode,
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5)
+                          )
+                        ),
+                         child: const Text('Gerar o código')
+                        ),
+                    ), 
+                  ],
+                ),
+                ),
               Expanded(
-                child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  itemCount: globalMembersUuids.length,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      width: 200,
-                      height: 100,
-                      padding: const EdgeInsets.symmetric(vertical: 10.0),
-                      child: GestureDetector(
-                        onTap: () => {removePlater(globalMembersUuids[index])},
-                        child: Card(
-                          margin: const EdgeInsets.all(8.0),
-                          color: Colors.transparent,
-                          child: Stack(
-                            children: [
-                              Positioned.directional(
-                                textDirection: TextDirection.ltr,
-                                child: Image.network(
-                                    globalMembersCardsUrls[index]),
-                              ),
-                              Positioned.fill(
-                                left: 230,
-                                child: Text(
-                                  globalMembersNames[index],
-                                  style: const TextStyle(
-                                      backgroundColor:
-                                          Color.fromARGB(255, 235, 238, 178),
-                                      fontFamily: 'TungstenBold',
-                                      fontSize: 20,
-                                      color: Color.fromARGB(255, 31, 33, 38)),
+                child: RefreshIndicator(
+                  onRefresh: () async{
+                    clear();
+                    getparty();
+
+                  },
+                  child: ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    itemCount: globalMembersUuids.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        width: 200,
+                        height: 100,
+                        padding: const EdgeInsets.symmetric(vertical: 10.0),
+                        child: GestureDetector(
+                          onTap: () async{
+                             generatePartyCodeState;
+                          },
+                          child: Card(
+                            margin: const EdgeInsets.all(8.0),
+                            color: Colors.transparent,
+                            child: Stack(
+                              children: [
+                                Positioned.directional(
+                                  textDirection: TextDirection.ltr,
+                                  child: Image.network(
+                                      globalMembersCardsUrls[index]),
                                 ),
-                              ),
-                            ],
+                                Positioned.fill(
+                                  left: 230,
+                                  child: Text(
+                                    globalMembersNames[index],
+                                    style: const TextStyle(
+                                        backgroundColor:
+                                            Color.fromARGB(255, 235, 238, 178),
+                                        fontFamily: 'TungstenBold',
+                                        fontSize: 20,
+                                        color: Color.fromARGB(255, 31, 33, 38)),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -430,5 +483,31 @@ class StartQueueGame extends State<StartQueueGameButton> {
 
   String accessibilityText() {
     return isAccessible ? "Grupo aberto" : "Grupo Fechado";
+  }
+
+  Future<void> generatePartyCode() async {
+      final url = Uri.parse(
+        'https://glz-br-1.na.a.pvp.net/parties/v1/parties/$globalPartyId/invitecode');
+    final Map<String, String> headers = {
+      "X-Riot-Entitlements-JWT": globalEntitlementToken,
+      "Authorization": "Bearer $globalBearerToken",
+    };
+    try {
+      final response = await http.post(url, headers: headers);
+      if (response.statusCode == 200) {
+        setState(() {
+          getGeneratedPartyCode(response.body);  
+        });
+        
+      }else{
+        print(response.body);
+      }
+    } catch (e) {
+      Exception(e);
+    }
+  }
+  void getGeneratedPartyCode(String response){
+    Map<String, dynamic> jsonMap = json.decode(response);
+    partycode = jsonMap['InviteCode'];
   }
 }
