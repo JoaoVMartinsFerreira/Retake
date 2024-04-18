@@ -1,13 +1,11 @@
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:retake_app/auth/entitlements_token.dart';
 import 'package:retake_app/auth/multi_factor_authentication.dart';
-import 'package:retake_app/clear/clear.dart';
 import 'package:retake_app/custom%20widgets/diamond_button.dart';
 import 'package:retake_app/desktop/gettext/get_text.dart';
+import 'package:retake_app/match_endpoints/match_history.dart';
 import 'package:retake_app/party%20endpoints/get_party.dart';
 import 'package:retake_app/party%20endpoints/get_party_player.dart';
 
@@ -30,6 +28,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
   var snackBar;
   final GlobalKey<StartQueueGame> widgetKey = GlobalKey();
   GetParty partyInfo = GetParty();
+  MatchHistory matchHistory = MatchHistory();
   @override
   void initState() {
     super.initState();
@@ -104,7 +103,6 @@ void clear(){
         context: context,
         builder: (BuildContext context) {
           String playerName = '';
-
           return AlertDialog(
             title: const Text(
               'CONVIDAR',
@@ -201,7 +199,10 @@ void clear(){
                         height: 100,
                         padding: const EdgeInsets.symmetric(vertical: 10.0),
                         child: GestureDetector(
-                          onTap: () => {print(globalMembersCardsUuids)},
+                          onTap: () => {
+
+                            matchHistory.getMatchHistory()
+                            },
                           child: Card(
                             margin: const EdgeInsets.all(8.0),
                             color: Colors.transparent,
@@ -294,6 +295,8 @@ void clear(){
     final Map<String, String> headers = {
       "X-Riot-Entitlements-JWT": globalEntitlementToken,
       "Authorization": "Bearer $globalBearerToken",
+      "X-Riot-ClientPlatform": "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
+      "X-Riot-ClientVersion": globalVersion,
     };
 
     try {
@@ -317,6 +320,8 @@ void clear(){
     final Map<String, String> headers = {
       "X-Riot-Entitlements-JWT": globalEntitlementToken,
       "Authorization": "Bearer $globalBearerToken",
+      "X-Riot-ClientPlatform": "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
+      "X-Riot-ClientVersion": globalVersion,
     };
 
     try {
@@ -339,6 +344,8 @@ void clear(){
     final Map<String, String> headers = {
       "X-Riot-Entitlements-JWT": globalEntitlementToken,
       "Authorization": "Bearer $globalBearerToken",
+      "X-Riot-ClientPlatform": "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
+      "X-Riot-ClientVersion": globalVersion,
     };
     try {
       final response = await http.delete(url, headers: headers);
@@ -353,6 +360,8 @@ void clear(){
     final Map<String, String> headers = {
       "X-Riot-Entitlements-JWT": globalEntitlementToken,
       "Authorization": "Bearer $globalBearerToken",
+      "X-Riot-ClientPlatform": "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
+      "X-Riot-ClientVersion": globalVersion,
     };
 
     final body = {"accessibility": option};
@@ -364,61 +373,7 @@ void clear(){
       Exception(e);
     }
   }
-  // Future<String> preGamePlayer() async {
-  //   final url = Uri.parse(
-  //       'https://glz-br-1.na.a.pvp.net/pregame/v1/matches/$globalPuuid');
-  //   bool isInPreGame = false;
-  //   final Map<String, String> headers = {
-  //     "X-Riot-Entitlements-JWT": globalEntitlementToken,
-  //     "Authorization": "Bearer $globalBearerToken",
-  //   };
-  //   Map<String, dynamic> jsonResponse = {};
-  //   String result = '';
-  //   while (isInPreGame == false) {
-  //     Future.delayed(const Duration(seconds: 1), () async {
-  //       try {
-  //         final response = await http.get(url, headers: headers);
-  //         if (response.statusCode == 200) {
-  //           jsonResponse = jsonDecode(response.body);
-  //           globalMatchId = jsonResponse['MatchID'];
-  //           isInPreGame = true;
-  //           result = 'sucesso';
-  //           return 'sucesso';
-  //         }
-  //       } catch (e) {
-  //         print(e);
-  //       }
-  //     });
-  //   }
-  //   print(globalMatchId);
-  //   return result;
-  // }
-  // Future<String> preGameQuit() async {
-  //   final url = Uri.parse(
-  //       'https://glz-br-1.na.a.pvp.net/pregame/v1/matches/$globalMatchId');
-
-  //   final Map<String, String> headers = {
-  //     "X-Riot-Entitlements-JWT": globalEntitlementToken,
-  //     "Authorization": "Bearer $globalBearerToken",
-  //   };
-
-  //   try {
-  //     final response = await http.post(url, headers: headers);
-  //     if (response.statusCode == 200) {
-  //       print('saiu da partida');
-  //       return 'sucesso';
-  //     } else {
-  //       print('erro');
-  //       print(response.body);
-  //       print(response.statusCode);
-  //       return 'erro';
-  //     }
-  //   } catch (e) {
-  //     print(e);
-  //     return 'erro ao fazer a reuisição';
-  //   }
-  // }
-
+ 
   Future<bool> _invitePlater(String name) async {
     final url = Uri.parse(
         'https://glz-br-1.na.a.pvp.net/parties/v1/parties/$globalPartyId/invites/name/$name/tag/BR1');
