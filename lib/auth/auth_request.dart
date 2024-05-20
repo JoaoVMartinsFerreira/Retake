@@ -6,13 +6,16 @@ import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:retake_app/auth/auth_cookies.dart';
 import 'package:retake_app/auth/no_multifactor.dart';
+import 'package:retake_app/const/colors.dart';
 import 'package:retake_app/custom%20widgets/footer_menu_bar.dart';
 import 'package:retake_app/auth/multi_factor_authentication.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:retake_app/menu/main_menu.dart';
 
 String globalCookies = '';
 String globalDirectBearerToken = '';
 NoMultifacfor nomfa = NoMultifacfor();
+
 class AuthRequestButton extends StatefulWidget {
   const AuthRequestButton({Key? key}) : super(key: key);
 
@@ -57,6 +60,7 @@ class AuthRequest extends State<AuthRequestButton> {
       navigator.pushReplacement(MaterialPageRoute(
           builder: (context) => const MultiFactorAuthButton()));
     }else if(verifyResponse(result) == "direct_access"){
+      globalScreenIndicator = 1;
       nomfa.noMfa();
       navigator.pushReplacement(MaterialPageRoute(builder: (context) => const FooterMenuBar()));
     }else{
@@ -89,11 +93,11 @@ Widget build(BuildContext context) {
               child: TextField(
                 autofillHints: [AutofillHints.username],
                 controller: usernameController,
-                style: const TextStyle(color: Colors.white),
+                style:  TextStyle(color: textColors["textWhite"]),
                 textAlign: TextAlign.justify,
-                decoration: const InputDecoration(
+                decoration:  InputDecoration(
                 hintText: 'Nome de Usuário', 
-                hintStyle: TextStyle(color: Colors.white),
+                hintStyle: TextStyle(color: textColors["textWhite"]),
                 border: OutlineInputBorder(),
                 
                 ),
@@ -107,10 +111,10 @@ Widget build(BuildContext context) {
             padding: const EdgeInsets.only(left: 20, right: 20),
             child: TextField(
               controller: passwordController,
-              style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(
+              style:  TextStyle(color: textColors["textWhite"]),
+              decoration: InputDecoration(
                 hintText: 'Senha',
-                hintStyle: TextStyle(color: Colors.white),   
+                hintStyle: TextStyle(color: textColors["textWhite"]),   
                 border: OutlineInputBorder()           
                 ),
               obscureText: true, // Para ocultar a senha
@@ -123,8 +127,8 @@ Widget build(BuildContext context) {
             child: ElevatedButton(
               onPressed: isLoading ? null : onPressed,
               style: ElevatedButton.styleFrom(
-                 backgroundColor: const Color.fromARGB(255, 31, 33, 38), 
-                foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+                 backgroundColor: textColors["textBlack"], 
+                foregroundColor: textColors["textWhite"],
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5),
                   )

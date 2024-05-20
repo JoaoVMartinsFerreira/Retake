@@ -1,3 +1,0 @@
-class Clear{
-  void clear(){}
-}

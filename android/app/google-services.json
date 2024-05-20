@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "432257910544",
+    "project_id": "retake-43ca2",
+    "storage_bucket": "retake-43ca2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:432257910544:android:fc7703742ffa5d91e24795",
+        "android_client_info": {
+          "package_name": "com.example.retake_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPH8wPHqFN6ww7vmOVDgay23LKq0NEIsw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

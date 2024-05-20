@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_launcher_icons/xml_templates.dart';
+import 'package:retake_app/const/colors.dart';
 /**
  * Widget para o botão em losângo 
  */
@@ -33,7 +34,7 @@ class DiamondFAB extends StatelessWidget{
           onPressed: onPressed,
           child: Icon(
             icon,
-            color: const Color.fromARGB(255, 31, 33, 38),
+            color: textColors["textBlack"],
           ),
         ),
       ),

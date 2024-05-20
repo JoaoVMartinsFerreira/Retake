@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:retake_app/auth/entitlements_token.dart';
 import 'package:retake_app/auth/multi_factor_authentication.dart';
 import 'package:retake_app/auth/player_info.dart';
+import 'package:retake_app/desktop/gettext/get_text.dart';
 
 class CountDownTimer extends StatefulWidget {
   const CountDownTimer({Key? key}) : super(key: key);
@@ -72,7 +73,10 @@ class _CountdownTimerState extends State<CountDownTimer> {
 
     final Map<String, String> headers = {
       "X-Riot-Entitlements-JWT": globalEntitlementToken,
-      "Authorization": "Bearer $globalBearerToken"
+      "Authorization": "Bearer $globalBearerToken",
+       "X-Riot-ClientPlatform": "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
+      "X-Riot-ClientVersion": globalVersion,
+      
     };
 
     try {

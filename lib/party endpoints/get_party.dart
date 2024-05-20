@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:retake_app/auth/entitlements_token.dart';
 import 'package:retake_app/auth/multi_factor_authentication.dart';
 import 'package:retake_app/auth/player_info.dart';
-import 'package:retake_app/clear/clear.dart';
 import 'package:retake_app/desktop/gettext/get_text.dart';
 import 'package:retake_app/local%20endpoints/friends.dart';
 import 'package:retake_app/party%20endpoints/get_party_player.dart';
@@ -19,7 +18,7 @@ List<dynamic> globalMembersNames = [];
 List<String> globalMembersCardsUrls = [];
 List<String> globalMembersTitles = [];
 
-class GetParty implements Clear {
+class GetParty  {
   Future<String> getParty() async {
     final url = Uri.parse(
         'https://glz-br-1.na.a.pvp.net/parties/v1/parties/$globalPartyId');
@@ -171,7 +170,7 @@ class GetParty implements Clear {
     }
   }
 
-  @override
+  
   void clear() {
     globalResponseMap.clear();
     globalIDCard = '';

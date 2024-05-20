@@ -5,7 +5,9 @@ import 'package:retake_app/auth/entitlements_token.dart';
 import 'package:retake_app/auth/multi_factor_authentication.dart';
 import 'package:retake_app/custom%20widgets/diamond_button.dart';
 import 'package:retake_app/desktop/gettext/get_text.dart';
+import 'package:retake_app/match_endpoints/match_details.dart';
 import 'package:retake_app/match_endpoints/match_history.dart';
+import 'package:retake_app/match_endpoints/teste.dart';
 import 'package:retake_app/party%20endpoints/get_party.dart';
 import 'package:retake_app/party%20endpoints/get_party_player.dart';
 
@@ -29,6 +31,9 @@ class StartQueueGame extends State<StartQueueGameButton> {
   final GlobalKey<StartQueueGame> widgetKey = GlobalKey();
   GetParty partyInfo = GetParty();
   MatchHistory matchHistory = MatchHistory();
+  MatchDetails matchDetails = MatchDetails();
+  MatchDetailsState matchDetailsState = MatchDetailsState();
+
   @override
   void initState() {
     super.initState();
@@ -201,7 +206,7 @@ void clear(){
                         child: GestureDetector(
                           onTap: () => {
 
-                            matchHistory.getMatchHistory()
+                            matchDetailsState.getMatchDeatils()
                             },
                           child: Card(
                             margin: const EdgeInsets.all(8.0),
@@ -256,7 +261,11 @@ void clear(){
               ),
               const SizedBox(height: 20),
               DiamondFAB(
-                onPressed: isLoading ? null : leaveOnPressed,
+              onPressed: () =>{
+                // matchDetailsState.clear(),
+                // matchDetailsState.getMatchesIds()
+                Teste().teste()
+              },
               ),
               if (isLoading)
                 const CircularProgressIndicator()
