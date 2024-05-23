@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -33,11 +34,11 @@ class StartQueueGame extends State<StartQueueGameButton> {
   MatchHistory matchHistory = MatchHistory();
   MatchDetails matchDetails = MatchDetails();
   MatchDetailsState matchDetailsState = MatchDetailsState();
-
   @override
   void initState() {
     super.initState();
     numPlayers = globalMembersUuids.length;
+    partyCodeController = TextEditingController();
     checkAccessibility();
   }
 
@@ -94,15 +95,18 @@ class StartQueueGame extends State<StartQueueGameButton> {
   void removePlayer() {
     setState(() {});
   }
-void getparty()async {
-  await partyInfo.getParty().then((value) => {
-    setState(() {
-    })
-  });
-}
-void clear(){
+
+  void getparty() async {
+    await _getPartyPlayer.getPartyPlayer(
+            globalPuuid, globalBearerToken, globalEntitlementToken);
+    await partyInfo.getParty().then((value) => {setState(() {})});
+  }
+
+  void clear() {
     partyInfo.clear();
   }
+
+
   void showAddPlayerDiaglog() {
     showDialog(
         context: context,
@@ -148,6 +152,12 @@ void clear(){
         });
   }
 
+  void generatePartyCodeState() {
+    setState(() {
+      generatePartyCode();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -182,18 +192,100 @@ void clear(){
                         style: const TextStyle(
                             color: Colors.white,
                             fontFamily: 'TungstenThin',
+                            fontWeight: FontWeight.bold,
                             fontSize: 25),
                       ),
                     ],
                   ),
                 ),
               ),
+
+              Padding(
+                padding: const EdgeInsets.only(left: 16.0),
+                child: Row(
+                  children: [
+                    Text(
+                      partycode,
+                      style: const TextStyle(
+                          fontFamily: 'TungstenBold',
+                          color: Color.fromARGB(255, 30, 233, 175),
+                          fontSize: 25),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    SizedBox(
+                      width: 140,
+                      height: 35,
+                      child: ElevatedButton(
+                          onPressed: generatePartyCode,
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5))),
+                          child: const Text(
+                            'Gerar o código',
+                            softWrap: false,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'TungstenThin',
+                                fontWeight: FontWeight.bold,
+                                fontSize: 22),
+                          )),
+                    ),
+                  ],
+                ),
+              ),
+                Padding(
+                padding: EdgeInsets.only(left: 16.0),
+                child: Row(
+                  children: [
+                     SizedBox(
+                      width: 140,
+                      height: 35,
+                        child: TextField(
+                          controller: partyCodeController,
+                          style: const TextStyle(
+                          fontFamily: 'TungstenBold',
+                          color: Color.fromARGB(255, 30, 233, 175),
+                          fontSize: 25),
+                          decoration: const InputDecoration(
+                            hintText: 'CÓDIGO',
+                            hintStyle: TextStyle(color: Colors.white,
+                             fontFamily: 'TungstenThin',
+                             fontSize: 22 ,
+                             fontWeight: FontWeight.w900
+                             )
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                      width: 160,
+                      height: 35,
+                      child: ElevatedButton(
+                          onPressed: () => {joinByCode(partyCodeController.text)},
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5))),
+                          child: const Text(
+                            'ENTRAR NO GRUPO',
+                            softWrap: false,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'TungstenThin',
+                                fontWeight: FontWeight.bold,
+                                fontSize: 22),
+                          )),
+                    ),
+                  ],
+                ),
+              ),
               Expanded(
                 child: RefreshIndicator(
-                  onRefresh: () async{
+                  onRefresh: () async {
                     clear();
                     getparty();
-
                   },
                   child: ListView.builder(
                     scrollDirection: Axis.vertical,
@@ -234,6 +326,7 @@ void clear(){
                             ),
                           ),
                         ),
+
                       );
                     },
                   ),
@@ -301,6 +394,8 @@ void clear(){
   Future<String> startQueueAction() async {
     final url = Uri.parse(
         'https://glz-br-1.na.a.pvp.net/parties/v1/parties/$globalPartyId/matchmaking/join');
+    final getText = GetText();
+    getText.getVersion();
     final Map<String, String> headers = {
       "X-Riot-Entitlements-JWT": globalEntitlementToken,
       "Authorization": "Bearer $globalBearerToken",
@@ -390,6 +485,8 @@ void clear(){
       "X-Riot-ClientVersion": globalVersion,
       "X-Riot-Entitlements-JWT": globalEntitlementToken,
       "Authorization": "Bearer $globalBearerToken",
+      "X-Riot-ClientPlatform":
+          "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
     };
 
     try {
@@ -412,5 +509,53 @@ void clear(){
 
   String accessibilityText() {
     return isAccessible ? "Grupo aberto" : "Grupo Fechado";
+  }
+
+
+  Future<void> generatePartyCode() async {
+    final url = Uri.parse(
+        'https://glz-br-1.na.a.pvp.net/parties/v1/parties/$globalPartyId/invitecode');
+    final Map<String, String> headers = {
+      "X-Riot-Entitlements-JWT": globalEntitlementToken,
+      "Authorization": "Bearer $globalBearerToken",
+      "X-Riot-ClientPlatform":
+          "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
+      "X-Riot-ClientVersion": globalVersion,
+    };
+    try {
+      final response = await http.post(url, headers: headers);
+      if (response.statusCode == 200) {
+        setState(() {
+          getGeneratedPartyCode(response.body);
+        });
+      }
+    } catch (e) {
+      Exception(e);
+    }
+  }
+  Future<void> joinByCode(String code) async{
+      final url = Uri.parse('https://glz-br-1.na.a.pvp.net/parties/v1/players/joinbycode/$code');
+      final Map<String, String> headers = {
+      "X-Riot-Entitlements-JWT": globalEntitlementToken,
+      "Authorization": "Bearer $globalBearerToken",
+      "X-Riot-ClientPlatform":
+          "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
+      "X-Riot-ClientVersion": globalVersion,
+    };
+    try {
+      final response = await http.post(url, headers: headers);
+      if (response.statusCode == 200) {
+        setState(() {
+        });
+      }else{
+        print(response.body);
+      }
+    } catch (e) {
+      Exception(e);
+    }
+  }
+  void getGeneratedPartyCode(String response) {
+    Map<String, dynamic> jsonMap = json.decode(response);
+    partycode = jsonMap['InviteCode'];
   }
 }
