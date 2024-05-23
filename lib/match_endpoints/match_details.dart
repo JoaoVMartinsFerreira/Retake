@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:retake_app/auth/entitlements_token.dart';
 import 'package:retake_app/auth/multi_factor_authentication.dart';
@@ -28,9 +29,16 @@ class MatchDetailsState extends State<MatchDetails> {
   late List<String>? savedStats = [];
   //late List<String>? savedStats = [];
   List<_CharData> statsData = [];
+  List<_CharData> agentsData = [];
+  Map<String, int> sortedAgents = {};
+  List<String> agentsName = [];
+  List<int> agentsApearences = [];
+
+  late final Future data;
   @override
   void initState() {
     super.initState();
+    data = getMatchesIds();
   }
 
   Future<void> getMatchDeatils() async {
@@ -48,55 +56,52 @@ class MatchDetailsState extends State<MatchDetails> {
     try {
       final response = await http.get(url, headers: headers);
       if (response.statusCode == 200) {
-        print('------------------------------------------------------------');
         getStats(response.body);
         getMatchesIds();
-      } else {
-        print(response.body);
-      }
-    } catch (e) {}
+      } 
+    } catch (e) {
+      Exception(e);
+    }
   }
 
-  void agentSum(String agent){
-    if(agentsCount.containsKey(agent)){
+  void agentSum(String agent) {
+    if (agentsCount.containsKey(agent)) {
       agentsCount[agent] = agentsCount[agent]! + 1;
     }
   }
 
-  Map<String, int> sortMap(Map<String, int> map){
-    var values = agentsCount.entries.toList(); 
+  void sortMap() {
+    var values = agentsCount.entries.toList();
 
-    values.sort((a,b) =>b.key.compareTo(a.key));
-    
-    return Map<String, int>.fromEntries(values);
+    values.sort(((a, b) => b.value.compareTo(a.value)));
+
+    sortedAgents = Map<String, int>.fromEntries(values.take(3));
+    agentsCount = Map<String, int>.fromEntries(values);
   }
+
   void getStats(String response) {
     Map<String, dynamic> jsonMap = json.decode(response);
     String characterId = '';
     List<dynamic> players = jsonMap['players'];
     for (var player in players) {
       if (player['gameName'] == 'Deoguinho') {
-        print(player['stats']);
         characterId = agents[player['characterId']];
-        print(agentsCount[characterId]);
-        print(agents[player['characterId']]);
         agentSum(characterId);
         kills += player['stats']['kills'];
         deaths += player['stats']['deaths'];
         assists += player['stats']['assists'];
       }
-    }  
+    }
   }
+
   Future<void> getMatchesIds() async {
     MatchHistory matchHistory = MatchHistory();
     await matchHistory.getMatchHistory();
-
-    //print(matchHistory.historyList);
     for (var element in matchHistory.historyIds) {
       await getMatchDeatilsLoop(element);
-      print(element);
     }
     print('$kills/$deaths/$assists');
+    await saveData();
   }
 
   Future<void> getMatchDeatilsLoop(String matchId) async {
@@ -114,10 +119,7 @@ class MatchDetailsState extends State<MatchDetails> {
       try {
         final response = await http.get(url, headers: headers);
         if (response.statusCode == 200) {
-          print('------------------------------------------------------------');
           getStats(response.body);
-        } else {
-          print(response.body);
         }
       } catch (e) {
         Exception(e);
@@ -134,32 +136,35 @@ class MatchDetailsState extends State<MatchDetails> {
 
   Future<void> saveData() async {
     needReload = false;
+    sortMap();
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('needReload', needReload);
     await prefs.setStringList('stats',
         <String>[kills.toString(), deaths.toString(), assists.toString()]);
     savedStats = prefs.getStringList('stats');
-    
 
-      int? dataKills = prefs.getInt('kills');
-      int? dataAssists = prefs.getInt('assists');
-      int? dataDeaths = prefs.getInt('deaths');
-      statsData = [
-        _CharData('ABATES', kills.toInt()),
-        _CharData('MORTES', deaths.toInt()),
-        _CharData('ASSISTÊNCIAS', assists.toInt()),
-      ];
+    statsData = [
+      _CharData('ABATES', kills.toInt()),
+      _CharData('MORTES', deaths.toInt()),
+      _CharData('ASSISTÊNCIAS', assists.toInt()),
+    ];
 
 
-      print(dataKills);
-      print(dataDeaths);
-      print(dataAssists);
+    for (var element in sortedAgents.entries) {
+      agentsName.add(element.key);
+      agentsApearences.add(element.value);
+    }
+    agentsData = [
+      _CharData(agentsName[0], agentsApearences[0]),
+      _CharData(agentsName[1], agentsApearences[1]),
+      _CharData(agentsName[2], agentsApearences[2])
+    ];
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<void>(
-      future: getMatchesIds(),
+      future: data,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting && needReload) {
           return const Center(child: CircularProgressIndicator());
@@ -177,50 +182,81 @@ class MatchDetailsState extends State<MatchDetails> {
                     fit: BoxFit.cover),
               ),
               child: SafeArea(
-                child: StatefulBuilder(builder: (context, setState) {
-                  return Column(
-                    children: [
-                      SfCircularChart(
-                        title:  ChartTitle(
-                          text: 'ESTATISTICAS',
-                          textStyle: TextStyle(
-                              fontFamily: 'TungstenBold',
-                              color: textColors["textBlue"],
-                              fontSize: 40),
-                        ),
-                        legend:  Legend(
-                            isVisible: true,
-                            overflowMode: LegendItemOverflowMode.wrap,
+                child: ListView(
+                  children:[
+                    StatefulBuilder(builder: (context, setState) {
+                    return Column(
+                      children: [
+                        SfCircularChart(
+                          title: ChartTitle(
+                            text: 'ESTATISTICAS',
                             textStyle: TextStyle(
-                              color: textColors["textBlue"],
-                              fontFamily: 'TungstenBold',
-                              fontSize: 20
-                            )),
-                        series: <CircularSeries<_CharData, String>>[
-                          PieSeries<_CharData, String>(
-                            dataSource: statsData,
-                            xValueMapper: (_CharData charData, _) => charData.x,
-                            yValueMapper: (_CharData charData, _) => charData.y,
-                            name: 'stats',
-                            dataLabelSettings:
-                                const DataLabelSettings(isVisible: true),
-                            strokeColor: Colors.black12,
-                          )
-                        ],
-                      ),
-                      ElevatedButton(
-                          onPressed: () async{
-                            saveData();
-                          },
-                          child: const Text('SALVAR')),
-                          ElevatedButton(onPressed: (){
-                            setState((){
-
-                            });
-                          }, child: const Text('EXIBIR GRÁFICO'))
-                    ],
-                  );
-                }),
+                                fontFamily: 'TungstenBold',
+                                color: textColors["textBlue"],
+                                fontSize: 40),
+                          ),
+                          legend: Legend(
+                              isVisible: true,
+                              overflowMode: LegendItemOverflowMode.wrap,
+                              textStyle: TextStyle(
+                                  color: textColors["textBlue"],
+                                  fontFamily: 'TungstenBold',
+                                  fontSize: 20)),
+                          series: <CircularSeries<_CharData, String>>[
+                            PieSeries<_CharData, String>(
+                              dataSource: statsData,
+                              xValueMapper: (_CharData charData, _) => charData.x,
+                              yValueMapper: (_CharData charData, _) => charData.y,
+                              name: 'stats',
+                              dataLabelSettings:
+                                  const DataLabelSettings(isVisible: true),
+                              strokeColor: Colors.black12,
+                            )
+                          ],
+                        ),
+                        // ElevatedButton(
+                        //     onPressed: () async {
+                        //       saveData();
+                        //     },
+                        //     child: const Text('SALVAR')),
+                        // ElevatedButton(
+                        //     onPressed: () {
+                        //       teste();
+                        //     },
+                        //     child: const Text('EXIBIR GRÁFICO')
+                        //     ),
+                             SfCircularChart(
+                          title: ChartTitle(
+                            text: 'AGENTES MAIS JOGADOS',
+                            textStyle: TextStyle(
+                                fontFamily: 'TungstenBold',
+                                color: textColors["textBlue"],
+                                fontSize: 40),
+                          ),
+                          legend: Legend(
+                              isVisible: true,
+                              overflowMode: LegendItemOverflowMode.wrap,
+                              textStyle: TextStyle(
+                                  color: textColors["textBlue"],
+                                  fontFamily: 'TungstenBold',
+                                  fontSize: 20)),
+                          series: <CircularSeries<_CharData, String>>[
+                            PieSeries<_CharData, String>(
+                              dataSource: agentsData,
+                              xValueMapper: (_CharData charData, _) => charData.x,
+                              yValueMapper: (_CharData charData, _) => charData.y,
+                              name: 'stats',
+                              dataLabelSettings:
+                                  const DataLabelSettings(isVisible: true),
+                              strokeColor: Colors.black12,
+                            )
+                          ],
+                        ),
+                      ],
+                    );
+                  })
+                  ] 
+                ),
               ),
             ),
           );
