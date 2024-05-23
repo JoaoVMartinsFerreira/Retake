@@ -16,12 +16,14 @@ class ChangeQueue {
    */
 
   Future<void> changeQueue(String queueId) async {
-    final url = Uri.parse(
-        'https://glz-br-1.na.a.pvp.net/parties/v1/parties/$globalPartyId/queue');
+    final url = Uri.parse('https://glz-br-1.na.a.pvp.net/parties/v1/parties/$globalPartyId/queue');
     final getText = GetText();
-    getText.getVersion();
+        getText.getVersion();
+
 
     final Map<String, String> headers = {
+      "X-Riot-ClientPlatform": "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
+      "X-Riot-ClientVersion": globalVersion,
       "X-Riot-Entitlements-JWT": globalEntitlementToken,
       "Authorization": "Bearer $globalBearerToken",
       "X-Riot-ClientPlatform":

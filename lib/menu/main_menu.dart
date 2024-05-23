@@ -6,7 +6,7 @@ import 'package:retake_app/party%20endpoints/get_party.dart';
 import 'package:retake_app/party%20endpoints/party.dart';
 import 'package:retake_app/store%20endpoints/prices.dart';
 
-bool globalScreenIndicator = false;
+int globalScreenIndicator = 0;
 /**
  * WIdget usado para as rotas do app.
  */
@@ -161,7 +161,7 @@ class MenuDrawerState extends State<MenuDrawer> {
               onTap: () async {
                 getParty.clear(); // Aparentemente as informações dos membros da sala não estão sendo duplicadas.
                 await getParty.getParty();
-                globalScreenIndicator = false;
+                globalScreenIndicator = 1;
                 _onItemTapped(_selectedIndex);
                 Navigator.pop(context);
                 Navigator.push(context,
@@ -176,12 +176,27 @@ class MenuDrawerState extends State<MenuDrawer> {
               selected: _selectedIndex == 1,
               onTap: () {
                 clearPrices.clear();
-                globalScreenIndicator = true;
+                globalScreenIndicator = 2;
                 _onItemTapped(_selectedIndex);
                 Navigator.pop(context);
               Navigator.pushReplacement(context, 
                 MaterialPageRoute(builder: (context) => const FooterMenuBar()));
               },
+            ),
+            ListTile(
+              title: const Text(
+                'ESTATÍSTICAS',
+                style: _menuStyle,
+              ),
+              selected: _selectedIndex == 1,
+              onTap: (){
+                globalScreenIndicator = 3;
+                _onItemTapped(_selectedIndex);
+                Navigator.pop(context);
+                Navigator.pushReplacement(context, 
+                MaterialPageRoute(builder: (context) => const FooterMenuBar()));
+              }
+              
             )
           ],
         ),

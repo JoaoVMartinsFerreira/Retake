@@ -5,8 +5,9 @@ import 'package:http/http.dart' as http;
 import 'package:retake_app/auth/entitlements_token.dart';
 import 'package:retake_app/auth/multi_factor_authentication.dart';
 import 'package:retake_app/auth/player_info.dart';
-import 'package:retake_app/clear/clear.dart';
+import 'package:retake_app/const/colors.dart';
 import 'package:retake_app/custom%20widgets/countdown_timer.dart';
+import 'package:retake_app/desktop/gettext/get_text.dart';
 
 Map<String, dynamic> globalOffers = {};
 List<String> globalUrls = [];
@@ -17,15 +18,8 @@ List<String> globalTiers = [];
 List<Color> globalCardTierColor = [];
 int globalOfferTimer = 0;
 
-Map<String, dynamic> tierColors = {
-  "0cebb8be-46d7-c12a-d306-e9907bfc5a25": const Color(0xFF009587),
-  "e046854e-406c-37f4-6607-19a9ba8426fc": const Color(0xFFf5955b),
-  "60bca009-4182-7998-dee7-b8a2558dc369": const Color(0xFFd1548d),
-  "12683d76-48d7-84a3-4e09-6985794f0445": const Color(0xFF5a9fe2),
-  "411e4a55-4e59-7757-41f0-86a53f101bb5": const Color(0xFFfad663),
-};
 
-class Prices extends StatelessWidget implements Clear {
+class Prices extends StatelessWidget {
   const Prices({super.key});
 
   @override
@@ -138,7 +132,10 @@ class Prices extends StatelessWidget implements Clear {
 
     final Map<String, String> headers = {
       "X-Riot-Entitlements-JWT": globalEntitlementToken,
-      "Authorization": "Bearer $globalBearerToken"
+      "Authorization": "Bearer $globalBearerToken",
+      "X-Riot-ClientPlatform": "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
+      "X-Riot-ClientVersion": globalVersion,
+      
     };
 
     try {
@@ -208,6 +205,7 @@ class Prices extends StatelessWidget implements Clear {
         }
         if (tierColors.containsKey(tier)) {
           globalCardTierColor.add(tierColors[tier]);
+        
         }
       }
     } catch (e) {
