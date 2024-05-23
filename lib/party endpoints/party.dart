@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:retake_app/auth/entitlements_token.dart';
 import 'package:retake_app/auth/multi_factor_authentication.dart';
+
 import 'package:retake_app/auth/player_info.dart';
 import 'package:retake_app/clear/clear.dart';
 import 'package:retake_app/custom%20widgets/diamond_button.dart';
@@ -107,6 +108,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
     partyInfo.clear();
   }
 
+
   void showAddPlayerDiaglog() {
     showDialog(
         context: context,
@@ -200,6 +202,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
                   ),
                 ),
               ),
+
               Padding(
                 padding: const EdgeInsets.only(left: 16.0),
                 child: Row(
@@ -325,6 +328,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
                             ),
                           ),
                         ),
+
                       );
                     },
                   ),
@@ -562,6 +566,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
   String accessibilityText() {
     return isAccessible ? "Grupo aberto" : "Grupo Fechado";
   }
+
 
   Future<void> generatePartyCode() async {
     final url = Uri.parse(
