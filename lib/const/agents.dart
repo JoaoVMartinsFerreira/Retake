@@ -28,7 +28,7 @@ Map<dynamic, dynamic> agents = {
 };
 
  Map<String, int> agentsCount = {
-"Raze": 0,
+ "Raze": 0,
  "Chamber": 0,
  "KAY/O": 0,
  "Skye": 0,
@@ -48,6 +48,7 @@ Map<dynamic, dynamic> agents = {
  "Reyna": 0,
  "Omen": 0,
  "Jett": 0,
+ "Deadlock": 0,
  }; 
  
  

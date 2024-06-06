@@ -4,8 +4,11 @@ import 'package:http/http.dart' as http;
 import 'package:retake_app/auth/entitlements_token.dart';
 import 'package:retake_app/auth/multi_factor_authentication.dart';
 import 'package:retake_app/auth/player_info.dart';
-import 'package:retake_app/clear/clear.dart';
 
+import 'package:retake_app/desktop/gettext/get_text.dart';
+import 'package:retake_app/local%20endpoints/friends.dart';
+import 'package:retake_app/party%20endpoints/get_party_player.dart';
+import 'dart:convert';
 
 Map<dynamic, dynamic> globalResponseMap = {};
 String globalIDCard = '';
@@ -16,16 +19,12 @@ List<dynamic> globalMembersNames = [];
 List<String> globalMembersCardsUrls = [];
 List<String> globalMembersTitles = [];
 
-class GetParty  {
+class GetParty {
   Future<String> getParty() async {
     final url = Uri.parse(
         'https://glz-br-1.na.a.pvp.net/parties/v1/parties/$globalPartyId');
-        final getText = GetText();
-        getText.getVersion();
-    
+
     final Map<String, String> headers = {
-      "X-Riot-ClientPlatform": "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
-      "X-Riot-ClientVersion": globalVersion,
       "X-Riot-Entitlements-JWT": globalEntitlementToken,
       "Authorization": "Bearer $globalBearerToken",
       "X-Riot-ClientPlatform":
@@ -44,7 +43,6 @@ class GetParty  {
         await getMembersNickName();
         return response.body;
       } else {
-        print(response.body);
         return 'Erro';
       }
     } catch (e) {
@@ -60,11 +58,9 @@ class GetParty  {
       "X-Riot-Entitlements-JWT": globalEntitlementToken,
       "Authorization": "Bearer $globalBearerToken",
     };
-
     try {
       final response = await http.get(url, headers: headers);
       Map<String, dynamic> accessibity = jsonDecode(response.body);
-      print(accessibity[0]["Accessibility"]);
       return accessibity[0]["Accessibility"];
     } catch (e) {
       return e.toString();
@@ -77,7 +73,8 @@ class GetParty  {
     final Map<String, String> headers = {
       "X-Riot-Entitlements-JWT": globalEntitlementToken,
       "Authorization": "Bearer $globalBearerToken",
-      "X-Riot-ClientPlatform": "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
+      "X-Riot-ClientPlatform":
+          "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
       "X-Riot-ClientVersion": globalVersion,
     };
     List<String> nameServiceBody = [globalPuuid];
@@ -87,10 +84,7 @@ class GetParty  {
           headers: headers, body: jsonEncode(nameServiceBody));
       if (response.statusCode == 200) {
         getGameName(response.body);
-      } else {
-        print("-----------");
-        print(response.body);
-      }
+      } else {}
     } catch (e) {
       Exception(e);
     }
@@ -138,7 +132,6 @@ class GetParty  {
   //     globalMembersTitles.add(member['PlayerIdentity']['PlayerTitleID']);
   //   }
   // }
-  
   Future<void> getMembersNickName() async {
     final url = Uri.parse('https://pd.na.a.pvp.net/name-service/v2/players');
     final getText = GetText();
@@ -147,8 +140,8 @@ class GetParty  {
     final Map<String, String> headers = {
       "X-Riot-Entitlements-JWT": globalEntitlementToken,
       "Authorization": "Bearer $globalBearerToken",
-      "X-Riot-ClientPlatform": "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
-
+      "X-Riot-ClientPlatform":
+          "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
       "X-Riot-ClientVersion": globalVersion,
     };
 
@@ -174,7 +167,7 @@ class GetParty  {
     }
   }
 
-  
+  @override
   void clear() {
     globalResponseMap.clear();
     globalIDCard = '';

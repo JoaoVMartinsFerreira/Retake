@@ -1,9 +1,7 @@
 import 'dart:convert';
-
 import 'package:retake_app/auth/entitlements_token.dart';
 import 'package:retake_app/auth/multi_factor_authentication.dart';
 import 'package:http/http.dart' as http;
-import 'package:retake_app/auth/player_info.dart';
 import 'package:retake_app/desktop/gettext/get_text.dart';
 class MatchHistory{
 
@@ -11,7 +9,7 @@ class MatchHistory{
   List<String>  historyIds = [];
 
   Future<void> getMatchHistory() async {
-    final url = Uri.parse('https://pd.na.a.pvp.net/match-history/v1/history/9a29ba60-1fba-53b5-89f4-ae53d3380959?startIndex=0&endIndex=2&queue=competitive');
+    final url = Uri.parse('https://pd.na.a.pvp.net/match-history/v1/history/9a29ba60-1fba-53b5-89f4-ae53d3380959?startIndex=0&endIndex=3&queue=competitive');
     final headers = {
        "X-Riot-Entitlements-JWT": globalEntitlementToken,
       "Authorization": "Bearer $globalBearerToken",
@@ -23,12 +21,8 @@ class MatchHistory{
       final response = await http.get(url, headers: headers);
       if(response.statusCode == 200){
         separatePartyId(response.body);
-      }else{
-        print('errado');
-        print(response.body);
       }
     } catch (e) {
-      print(e);
       Exception(e);
     }
   }

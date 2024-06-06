@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:retake_app/auth/auth_request.dart';
-import 'package:retake_app/custom%20widgets/radial_bar.dart';
-import 'package:retake_app/match_endpoints/match_details.dart';
-import 'package:retake_app/match_endpoints/match_history.dart';
 void main() {
   runApp(const MyApp());
 }

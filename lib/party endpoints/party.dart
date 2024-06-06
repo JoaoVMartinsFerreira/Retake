@@ -4,11 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:retake_app/auth/entitlements_token.dart';
 import 'package:retake_app/auth/multi_factor_authentication.dart';
+import 'package:retake_app/auth/player_info.dart';
 import 'package:retake_app/custom%20widgets/diamond_button.dart';
 import 'package:retake_app/desktop/gettext/get_text.dart';
-import 'package:retake_app/match_endpoints/match_details.dart';
-import 'package:retake_app/match_endpoints/match_history.dart';
-import 'package:retake_app/match_endpoints/teste.dart';
 import 'package:retake_app/party%20endpoints/get_party.dart';
 import 'package:retake_app/party%20endpoints/get_party_player.dart';
 
@@ -31,9 +29,9 @@ class StartQueueGame extends State<StartQueueGameButton> {
   var snackBar;
   final GlobalKey<StartQueueGame> widgetKey = GlobalKey();
   GetParty partyInfo = GetParty();
-  MatchHistory matchHistory = MatchHistory();
-  MatchDetails matchDetails = MatchDetails();
-  MatchDetailsState matchDetailsState = MatchDetailsState();
+  String partycode = '';
+  late TextEditingController partyCodeController;
+  final GetPartyPlayer _getPartyPlayer = GetPartyPlayer();
   @override
   void initState() {
     super.initState();
@@ -106,12 +104,12 @@ class StartQueueGame extends State<StartQueueGameButton> {
     partyInfo.clear();
   }
 
-
   void showAddPlayerDiaglog() {
     showDialog(
         context: context,
         builder: (BuildContext context) {
           String playerName = '';
+
           return AlertDialog(
             title: const Text(
               'CONVIDAR',
@@ -199,7 +197,6 @@ class StartQueueGame extends State<StartQueueGameButton> {
                   ),
                 ),
               ),
-
               Padding(
                 padding: const EdgeInsets.only(left: 16.0),
                 child: Row(
@@ -296,10 +293,9 @@ class StartQueueGame extends State<StartQueueGameButton> {
                         height: 100,
                         padding: const EdgeInsets.symmetric(vertical: 10.0),
                         child: GestureDetector(
-                          onTap: () => {
-
-                            matchDetailsState.getMatchDeatils()
-                            },
+                          onTap: () async {
+                            generatePartyCodeState;
+                          },
                           child: Card(
                             margin: const EdgeInsets.all(8.0),
                             color: Colors.transparent,
@@ -326,7 +322,6 @@ class StartQueueGame extends State<StartQueueGameButton> {
                             ),
                           ),
                         ),
-
                       );
                     },
                   ),
@@ -354,11 +349,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
               ),
               const SizedBox(height: 20),
               DiamondFAB(
-              onPressed: () =>{
-                // matchDetailsState.clear(),
-                // matchDetailsState.getMatchesIds()
-                Teste().teste()
-              },
+                onPressed: isLoading ? null : leaveOnPressed,
               ),
               if (isLoading)
                 const CircularProgressIndicator()
@@ -399,7 +390,8 @@ class StartQueueGame extends State<StartQueueGameButton> {
     final Map<String, String> headers = {
       "X-Riot-Entitlements-JWT": globalEntitlementToken,
       "Authorization": "Bearer $globalBearerToken",
-      "X-Riot-ClientPlatform": "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
+      "X-Riot-ClientPlatform":
+          "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
       "X-Riot-ClientVersion": globalVersion,
     };
 
@@ -424,7 +416,8 @@ class StartQueueGame extends State<StartQueueGameButton> {
     final Map<String, String> headers = {
       "X-Riot-Entitlements-JWT": globalEntitlementToken,
       "Authorization": "Bearer $globalBearerToken",
-      "X-Riot-ClientPlatform": "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
+      "X-Riot-ClientPlatform":
+          "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
       "X-Riot-ClientVersion": globalVersion,
     };
 
@@ -448,7 +441,8 @@ class StartQueueGame extends State<StartQueueGameButton> {
     final Map<String, String> headers = {
       "X-Riot-Entitlements-JWT": globalEntitlementToken,
       "Authorization": "Bearer $globalBearerToken",
-      "X-Riot-ClientPlatform": "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
+      "X-Riot-ClientPlatform":
+          "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
       "X-Riot-ClientVersion": globalVersion,
     };
     try {
@@ -464,7 +458,8 @@ class StartQueueGame extends State<StartQueueGameButton> {
     final Map<String, String> headers = {
       "X-Riot-Entitlements-JWT": globalEntitlementToken,
       "Authorization": "Bearer $globalBearerToken",
-      "X-Riot-ClientPlatform": "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
+      "X-Riot-ClientPlatform":
+          "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
       "X-Riot-ClientVersion": globalVersion,
     };
 
@@ -477,7 +472,61 @@ class StartQueueGame extends State<StartQueueGameButton> {
       Exception(e);
     }
   }
- 
+  // Future<String> preGamePlayer() async {
+  //   final url = Uri.parse(
+  //       'https://glz-br-1.na.a.pvp.net/pregame/v1/matches/$globalPuuid');
+  //   bool isInPreGame = false;
+  //   final Map<String, String> headers = {
+  //     "X-Riot-Entitlements-JWT": globalEntitlementToken,
+  //     "Authorization": "Bearer $globalBearerToken",
+  //   };
+  //   Map<String, dynamic> jsonResponse = {};
+  //   String result = '';
+  //   while (isInPreGame == false) {
+  //     Future.delayed(const Duration(seconds: 1), () async {
+  //       try {
+  //         final response = await http.get(url, headers: headers);
+  //         if (response.statusCode == 200) {
+  //           jsonResponse = jsonDecode(response.body);
+  //           globalMatchId = jsonResponse['MatchID'];
+  //           isInPreGame = true;
+  //           result = 'sucesso';
+  //           return 'sucesso';
+  //         }
+  //       } catch (e) {
+  //         print(e);
+  //       }
+  //     });
+  //   }
+  //   print(globalMatchId);
+  //   return result;
+  // }
+  // Future<String> preGameQuit() async {
+  //   final url = Uri.parse(
+  //       'https://glz-br-1.na.a.pvp.net/pregame/v1/matches/$globalMatchId');
+
+  //   final Map<String, String> headers = {
+  //     "X-Riot-Entitlements-JWT": globalEntitlementToken,
+  //     "Authorization": "Bearer $globalBearerToken",
+  //   };
+
+  //   try {
+  //     final response = await http.post(url, headers: headers);
+  //     if (response.statusCode == 200) {
+  //       print('saiu da partida');
+  //       return 'sucesso';
+  //     } else {
+  //       print('erro');
+  //       print(response.body);
+  //       print(response.statusCode);
+  //       return 'erro';
+  //     }
+  //   } catch (e) {
+  //     print(e);
+  //     return 'erro ao fazer a reuisição';
+  //   }
+  // }
+
   Future<bool> _invitePlater(String name) async {
     final url = Uri.parse(
         'https://glz-br-1.na.a.pvp.net/parties/v1/parties/$globalPartyId/invites/name/$name/tag/BR1');
@@ -510,7 +559,6 @@ class StartQueueGame extends State<StartQueueGameButton> {
   String accessibilityText() {
     return isAccessible ? "Grupo aberto" : "Grupo Fechado";
   }
-
 
   Future<void> generatePartyCode() async {
     final url = Uri.parse(
