@@ -64,8 +64,11 @@ class AuthRequest extends State<AuthRequestButton> {
       nomfa.noMfa();
       navigator.pushReplacement(MaterialPageRoute(builder: (context) => const FooterMenuBar()));
     }else{
-      snackBar = const SnackBar(content: Text('Erro no login! \n Verifique seus dados, sua conexão com a internet ou a disponibilidade dos servidores.'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      if(context.mounted){
+        snackBar = const SnackBar(content: Text('Erro no login! \n Verifique seus dados, sua conexão com a internet ou a disponibilidade dos servidores.'));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+      
     }
     
   }
@@ -162,10 +165,13 @@ Widget build(BuildContext context) {
     globalCookies = cookies;
     final body = {
       "type": "auth",
-      "username": userName,
-      "password": password,
       "remember": false,
       "language": "en_US",
+      "riot_identity": {
+        "captcha": "123fS22",
+      "username": userName,
+      "password": password
+      },
     };
 
    
@@ -187,6 +193,7 @@ Widget build(BuildContext context) {
        else {
         result = '${response.statusCode} \n ${response.body}';
         print(result);
+        print('erro aqui');
       }
     } catch (e) {
       result = e.toString();

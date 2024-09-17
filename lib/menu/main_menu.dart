@@ -190,6 +190,7 @@ class MenuDrawerState extends State<MenuDrawer> {
               ),
               selected: _selectedIndex == 1,
               onTap: (){
+                
                 globalScreenIndicator = 3;
                 _onItemTapped(_selectedIndex);
                 Navigator.pop(context);

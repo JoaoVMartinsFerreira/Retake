@@ -9,7 +9,7 @@ class MatchHistory{
   List<String>  historyIds = [];
 
   Future<void> getMatchHistory() async {
-    final url = Uri.parse('https://pd.na.a.pvp.net/match-history/v1/history/9a29ba60-1fba-53b5-89f4-ae53d3380959?startIndex=0&endIndex=3&queue=competitive');
+    final url = Uri.parse('https://pd.na.a.pvp.net/match-history/v1/history/9a29ba60-1fba-53b5-89f4-ae53d3380959?startIndex=0&endIndex=5&queue=competitive');
     final headers = {
        "X-Riot-Entitlements-JWT": globalEntitlementToken,
       "Authorization": "Bearer $globalBearerToken",

@@ -38,9 +38,10 @@ class MatchDetailsState extends State<MatchDetails> {
   @override
   void initState() {
     super.initState();
-    data = getMatchesIds();
+    clear();
+    data = getMatchesIds(); 
   }
-
+  
   Future<void> getMatchDeatils() async {
     final url = Uri.parse(
         'https://pd.na.a.pvp.net/match-details/v1/matches/b18576e2-f049-4684-9e98-70216552b21f');
@@ -100,7 +101,6 @@ class MatchDetailsState extends State<MatchDetails> {
     for (var element in matchHistory.historyIds) {
       await getMatchDeatilsLoop(element);
     }
-    print('$kills/$deaths/$assists');
     await saveData();
   }
 
@@ -131,7 +131,11 @@ class MatchDetailsState extends State<MatchDetails> {
     kills = 0;
     deaths = 0;
     assists = 0;
-    //needReload = true;
+    agentsData = [];
+    agentsApearences = [];
+    agentsCount.forEach((key, value) {
+      agentsCount[key] = 0;
+    });
   }
 
   Future<void> saveData() async {
@@ -166,7 +170,7 @@ class MatchDetailsState extends State<MatchDetails> {
     return FutureBuilder<void>(
       future: data,
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting && needReload) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Center(
@@ -225,7 +229,9 @@ class MatchDetailsState extends State<MatchDetails> {
                         //     },
                         //     child: const Text('EXIBIR GRÁFICO')
                         //     ),
-                             SfCircularChart(
+                             SfCartesianChart(
+                              primaryXAxis: const CategoryAxis(),
+                              primaryYAxis: const NumericAxis(minimum: 0,maximum: 20, interval: 3,),
                           title: ChartTitle(
                             text: 'AGENTES MAIS JOGADOS',
                             textStyle: TextStyle(
@@ -236,19 +242,19 @@ class MatchDetailsState extends State<MatchDetails> {
                           legend: Legend(
                               isVisible: true,
                               overflowMode: LegendItemOverflowMode.wrap,
-                              textStyle: TextStyle(
+                            textStyle: TextStyle(
                                   color: textColors["textBlue"],
                                   fontFamily: 'TungstenBold',
                                   fontSize: 20)),
-                          series: <CircularSeries<_CharData, String>>[
-                            PieSeries<_CharData, String>(
+                          series: <CartesianSeries<_CharData, String>>[
+                            BarSeries<_CharData, String>(
                               dataSource: agentsData,
                               xValueMapper: (_CharData charData, _) => charData.x,
                               yValueMapper: (_CharData charData, _) => charData.y,
-                              name: 'stats',
+                              name: '',
+                              color: Colors.amber,
                               dataLabelSettings:
                                   const DataLabelSettings(isVisible: true),
-                              strokeColor: Colors.black12,
                             )
                           ],
                         ),

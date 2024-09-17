@@ -19,9 +19,9 @@ class _FooterMenuBarState extends State<FooterMenuBar> {
     const AuthRequestButton(),
     const MainMenu(),
     const Prices(),
-     MatchDetails()
+     const MatchDetails()
   ];
-  int _indiceAtual = 1;
+  final int _indiceAtual = 1;
 
   void onTabTapped(int index) {
     

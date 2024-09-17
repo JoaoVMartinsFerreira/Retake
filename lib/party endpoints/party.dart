@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:retake_app/auth/entitlements_token.dart';
 import 'package:retake_app/auth/multi_factor_authentication.dart';
 import 'package:retake_app/auth/player_info.dart';
+import 'package:retake_app/const/colors.dart';
 import 'package:retake_app/custom%20widgets/diamond_button.dart';
 import 'package:retake_app/desktop/gettext/get_text.dart';
 import 'package:retake_app/party%20endpoints/get_party.dart';
@@ -32,6 +33,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
   String partycode = '';
   late TextEditingController partyCodeController;
   final GetPartyPlayer _getPartyPlayer = GetPartyPlayer();
+
   @override
   void initState() {
     super.initState();
@@ -96,7 +98,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
 
   void getparty() async {
     await _getPartyPlayer.getPartyPlayer(
-            globalPuuid, globalBearerToken, globalEntitlementToken);
+        globalPuuid, globalBearerToken, globalEntitlementToken);
     await partyInfo.getParty().then((value) => {setState(() {})});
   }
 
@@ -107,43 +109,72 @@ class StartQueueGame extends State<StartQueueGameButton> {
   void showAddPlayerDiaglog() {
     showDialog(
         context: context,
+        barrierColor: Colors.transparent,
         builder: (BuildContext context) {
           String playerName = '';
-
+          String playerTag = '';
           return AlertDialog(
-            title: const Text(
+            backgroundColor: Colors.grey.withOpacity(0.9),
+            elevation: 0.0,
+            title: Text(
               'CONVIDAR',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
+                fontFamily: 'TungstenBold',
+                fontSize: 40,
+                color: textColors['textBlack']
               ),
               textAlign: TextAlign.center,
             ),
-            content: TextField(
-              onChanged: (value) {
-                playerName = value;
-              },
-              decoration: const InputDecoration(
-                hintText: 'BUSCAR',
-                hintStyle: TextStyle(fontWeight: FontWeight.bold),
+            content: SizedBox(
+              height: 96,
+              child: Column(
+                children: [
+                  TextField(
+                    onChanged: (value) {
+                      playerName = value;
+                    },
+                    decoration: const InputDecoration(
+                      hintText: 'NickName',
+                      hintStyle: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  TextField(
+                    onChanged: (value) {
+                      playerTag = value;
+                    },
+                    decoration: const InputDecoration(
+                      hintText: 'Tag',
+                      hintStyle: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
               ),
             ),
             actions: [
               TextButton(
-                  onPressed: () {
-                    _invitePlater(playerName);
-                    if (checkInviteStatus(isPLayerFound)) {
-                      //Navigator.pop(context);
-                    } else {
-                      snackBar = const SnackBar(
-                          content: Text("Jogador não encontrado"));
-                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                    }
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('CONVIDAR')),
+                onPressed: () {
+                  _invitePlater(playerName, playerTag);
+                  if (checkInviteStatus(isPLayerFound)) {
+                    //Navigator.pop(context);
+                  } else {
+                    snackBar =
+                        const SnackBar(content: Text("Jogador não encontrado"));
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  }
+                  Navigator.of(context).pop();
+                },
+                child:  Text(
+                  'CONVIDAR',
+                  style: TextStyle(fontFamily: 'TungstenBold', fontSize: 25, color: textColors['textBlack']),
+                ),
+              ),
               TextButton(
                 onPressed: Navigator.of(context).pop,
-                child: const Text('CANCELAR'),
+                child:  Text(
+                  'CANCELAR',
+                  style: TextStyle(fontFamily: 'TungstenBold', fontSize: 25, color: textColors['textBlack']),
+                ),
               )
             ],
           );
@@ -233,34 +264,34 @@ class StartQueueGame extends State<StartQueueGameButton> {
                   ],
                 ),
               ),
-                Padding(
+              Padding(
                 padding: EdgeInsets.only(left: 16.0),
                 child: Row(
                   children: [
-                     SizedBox(
+                    SizedBox(
                       width: 140,
                       height: 35,
-                        child: TextField(
-                          controller: partyCodeController,
-                          style: const TextStyle(
-                          fontFamily: 'TungstenBold',
-                          color: Color.fromARGB(255, 30, 233, 175),
-                          fontSize: 25),
-                          decoration: const InputDecoration(
+                      child: TextField(
+                        controller: partyCodeController,
+                        style: const TextStyle(
+                            fontFamily: 'TungstenBold',
+                            color: Color.fromARGB(255, 30, 233, 175),
+                            fontSize: 25),
+                        decoration: const InputDecoration(
                             hintText: 'CÓDIGO',
-                            hintStyle: TextStyle(color: Colors.white,
-                             fontFamily: 'TungstenThin',
-                             fontSize: 22 ,
-                             fontWeight: FontWeight.w900
-                             )
-                          ),
-                        ),
+                            hintStyle: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'TungstenThin',
+                                fontSize: 22,
+                                fontWeight: FontWeight.w900)),
                       ),
-                      SizedBox(
+                    ),
+                    SizedBox(
                       width: 160,
                       height: 35,
                       child: ElevatedButton(
-                          onPressed: () => {joinByCode(partyCodeController.text)},
+                          onPressed: () =>
+                              {joinByCode(partyCodeController.text)},
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.transparent,
                               shape: RoundedRectangleBorder(
@@ -527,15 +558,15 @@ class StartQueueGame extends State<StartQueueGameButton> {
   //   }
   // }
 
-  Future<bool> _invitePlater(String name) async {
+  Future<bool> _invitePlater(String name, String playerTag) async {
     final url = Uri.parse(
-        'https://glz-br-1.na.a.pvp.net/parties/v1/parties/$globalPartyId/invites/name/$name/tag/BR1');
+        'https://glz-br-1.na.a.pvp.net/parties/v1/parties/$globalPartyId/invites/name/$name/tag/$playerTag');
     final Map<String, String> headers = {
+      "X-Riot-ClientPlatform":
+          "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
       "X-Riot-ClientVersion": globalVersion,
       "X-Riot-Entitlements-JWT": globalEntitlementToken,
       "Authorization": "Bearer $globalBearerToken",
-      "X-Riot-ClientPlatform":
-          "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
     };
 
     try {
@@ -544,6 +575,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
         isPLayerFound = true;
         return true;
       } else {
+        print(response.body);
         isPLayerFound = false;
         return false;
       }
@@ -581,9 +613,11 @@ class StartQueueGame extends State<StartQueueGameButton> {
       Exception(e);
     }
   }
-  Future<void> joinByCode(String code) async{
-      final url = Uri.parse('https://glz-br-1.na.a.pvp.net/parties/v1/players/joinbycode/$code');
-      final Map<String, String> headers = {
+
+  Future<void> joinByCode(String code) async {
+    final url = Uri.parse(
+        'https://glz-br-1.na.a.pvp.net/parties/v1/players/joinbycode/$code');
+    final Map<String, String> headers = {
       "X-Riot-Entitlements-JWT": globalEntitlementToken,
       "Authorization": "Bearer $globalBearerToken",
       "X-Riot-ClientPlatform":
@@ -593,15 +627,15 @@ class StartQueueGame extends State<StartQueueGameButton> {
     try {
       final response = await http.post(url, headers: headers);
       if (response.statusCode == 200) {
-        setState(() {
-        });
-      }else{
+        setState(() {});
+      } else {
         print(response.body);
       }
     } catch (e) {
       Exception(e);
     }
   }
+
   void getGeneratedPartyCode(String response) {
     Map<String, dynamic> jsonMap = json.decode(response);
     partycode = jsonMap['InviteCode'];

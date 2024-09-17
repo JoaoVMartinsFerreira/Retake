@@ -30,9 +30,11 @@ class AuthCookies {
       final desiredCookies = _extractDesiredCookieValues(cookies.toString());
 
       if (response.statusCode == 200) {
+        //print(response.statusCode);
+        //print(response.body);
         return desiredCookies;
       } else {
-        '${response.statusCode}';
+        //'${response.statusCode}';
       }
     } catch (e) {
       Exception(e);

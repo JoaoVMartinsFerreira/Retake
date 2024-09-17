@@ -26,16 +26,22 @@ class _CountdownTimerState extends State<CountDownTimer> {
       startTimer();
     });
   }
-
+  @override
+  void dispose(){
+    _timer.cancel();
+    super.dispose();
+  }
   void startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        if (remainingSeconds > 0) {
-          remainingSeconds--;
-        } else {
-          _timer.cancel();
-        }
-      });
+      if (mounted) {
+        setState(() {
+          if (remainingSeconds > 0) {
+            remainingSeconds--;
+          } else {
+            _timer.cancel();
+          }
+        });
+      }
     });
   }
 
@@ -49,7 +55,7 @@ class _CountdownTimerState extends State<CountDownTimer> {
       style: const TextStyle(
         fontSize: 25,
         fontFamily: 'TungstenThin',
-        color: const Color.fromARGB(255, 255, 255, 255),
+        color:Color.fromARGB(255, 255, 255, 255),
       ),
     ));
   }
@@ -74,9 +80,9 @@ class _CountdownTimerState extends State<CountDownTimer> {
     final Map<String, String> headers = {
       "X-Riot-Entitlements-JWT": globalEntitlementToken,
       "Authorization": "Bearer $globalBearerToken",
-       "X-Riot-ClientPlatform": "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
+      "X-Riot-ClientPlatform":
+          "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9",
       "X-Riot-ClientVersion": globalVersion,
-      
     };
 
     try {
@@ -88,11 +94,9 @@ class _CountdownTimerState extends State<CountDownTimer> {
             skinsPanelLayout['SingleItemOffersRemainingDurationInSeconds'];
         return remainingSeconds;
       } else {
-        print('Erro na requisição: ${response.statusCode}');
         throw Exception('Erro na requisição: ${response.statusCode}');
       }
     } catch (e) {
-      print('Erro ao realizar a requisição: $e');
       throw Exception('Erro ao realizar a requisição: $e');
     }
   }

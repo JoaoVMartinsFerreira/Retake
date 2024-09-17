@@ -49,6 +49,7 @@ Map<dynamic, dynamic> agents = {
  "Omen": 0,
  "Jett": 0,
  "Deadlock": 0,
+ "Gekko": 0
  }; 
  
  
