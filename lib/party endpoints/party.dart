@@ -441,7 +441,7 @@ class StartQueueGame extends State<StartQueueGameButton> {
     }
   }
 
-  Future<void> removePlater(String puuid) async {
+  Future<void> removePlayer(String puuid) async {
     final url =
         Uri.parse('https://glz-br-1.na.a.pvp.net/parties/v1/players/$puuid');
 
